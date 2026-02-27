@@ -1,0 +1,115 @@
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-header h2 {
+  margin: 10px 0 5px 0;
+  color: #c00000; /* ACE Red */
+}
+
+.login-header p {
+  color: #666;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.login-logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: -70px;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  border: 1px solid #ef9a9a;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; /* Keeps padding inside width */
+  font-size: 1rem;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.login-submit-btn:hover {
+  background-color: #e6b800;
+}
+
+.login-submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.contact-admin {
+  margin-top: 25px;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.new-user-link {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.new-user-link a {
+  color: #4F46E5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.new-user-link a:hover {
+  text-decoration: underline;
+  color: #4338CA;
+}
