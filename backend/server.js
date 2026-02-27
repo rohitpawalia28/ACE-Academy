@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const http = require('http'); 
-const { Server } = require('socket.io'); 
+const http = require('http');
+const { Server } = require('socket.io');
 
 // Database Models
 const User = require('./models/User');
@@ -10,7 +10,7 @@ const Log = require('./models/Log');
 const Message = require('./models/Message');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -21,7 +21,7 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173", 
+        origin: "http://localhost:5173",
         methods: ["GET", "POST"]
     }
 });
@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
 
     // Register user when they log in
     socket.on('register_user', (username) => {
-        socket.username = username; 
+        socket.username = username;
         console.log(`👤 User registered on socket: ${username}`);
     });
 
@@ -65,23 +65,23 @@ io.on('connection', (socket) => {
         const now = new Date();
         const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const date = now.toLocaleDateString('en-GB');
-        
+
         const receiptMsg = `${data.reader} has read the messages.`;
-        
-        const receiptData = { 
-            room: data.room, 
+
+        const receiptData = {
+            room: data.room,
             author: "System",
-            message: receiptMsg, 
-            time: time, 
+            message: receiptMsg,
+            time: time,
             date: date,
-            type: 'system' 
+            type: 'system'
         };
 
         try {
             // Optional: Save the read receipt to the database history
             const newSystemMsg = new Message(receiptData);
             await newSystemMsg.save();
-            
+
             // Send the system message back to the chat room
             socket.to(data.room).emit("read_receipt", receiptData);
         } catch (error) {
@@ -92,7 +92,7 @@ io.on('connection', (socket) => {
     // THE FIX: Handle Tab Close (Disconnect) - REMAINS UNCHANGED
     socket.on('disconnect', async () => {
         console.log(`❌ User disconnected: ${socket.id}`);
-        
+
         // If we know who this was, clear their double-login token in the database
         if (socket.username) {
             try {
@@ -119,7 +119,7 @@ io.on('connection', (socket) => {
 });
 
 // Connect to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/ace_academy')
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB successfully connected!'))
     .catch((error) => console.log('❌ MongoDB connection failed:', error));
 
@@ -128,7 +128,7 @@ app.use('/uploads', express.static('uploads'));
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
-app.use('/api/chat', require('./routes/chat')); 
+app.use('/api/chat', require('./routes/chat'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/timetable', require('./routes/timetable'));
 app.use('/api/progress', require('./routes/progress'));
