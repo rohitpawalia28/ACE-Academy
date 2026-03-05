@@ -15,9 +15,25 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
+const allowedOrigins = [
+  CLIENT_URL,
+  process.env.CLIENT_URL_2,
+  process.env.CLIENT_URL_3,
+].filter(Boolean);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true; // allow server-to-server / curl / thunder client
+  if (allowedOrigins.includes(origin)) return true;
+  if (origin.endsWith('.vercel.app')) return true; // fallback for Vercel previews
+  return false;
+};
+
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   })
 );
@@ -29,7 +45,10 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_URL,
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) return callback(null, true);
+      return callback(new Error(`Socket CORS blocked for origin: ${origin}`));
+    },
     methods: ['GET', 'POST'],
     credentials: true,
   },
