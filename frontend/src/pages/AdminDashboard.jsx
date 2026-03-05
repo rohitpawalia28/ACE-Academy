@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import './AdminDashboard.css';
 
-const socket = io.connect('http://localhost:5000');
+const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -32,15 +32,15 @@ const AdminDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const notesRes = await fetch('http://localhost:5000/api/notes'); setAllNotes(await notesRes.json());
-      const usersRes = await fetch('http://localhost:5000/api/admin/all-users'); const uData = await usersRes.json(); setAllUsers(uData);
+      const notesRes = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/notes'); setAllNotes(await notesRes.json());
+      const usersRes = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/admin/all-users'); const uData = await usersRes.json(); setAllUsers(uData);
       const contacts = [];
       uData.forEach(u => contacts.push({ id: u.username, name: u.name || u.username, room: `admin_${u.username}`, type: u.role, initial: (u.name || u.username).charAt(0).toUpperCase() }));
       setChatContacts(contacts); contacts.forEach(c => socket.emit('join_chat', c.room));
     } catch (err) { console.error(err); }
   };
 
-  const selectChat = (contact) => { setSelectedChatObj(contact); setChatRoom(contact.room); setUnreadRooms(prev => ({ ...prev, [contact.room]: false })); fetch(`http://localhost:5000/api/chat/${contact.room}`).then(res => res.json()).then(data => setMessageList(data)); };
+  const selectChat = (contact) => { setSelectedChatObj(contact); setChatRoom(contact.room); setUnreadRooms(prev => ({ ...prev, [contact.room]: false })); fetch(`https://ace-academy-backend-e0pi.onrender.com/api/chat/${contact.room}`).then(res => res.json()).then(data => setMessageList(data)); };
   useEffect(() => { const handler = (data) => { if (data.room === chatRoom) setMessageList((list) => [...list, data]); if (data.author !== adminName && data.type !== 'system') { if (data.room !== chatRoom) setUnreadRooms(prev => ({ ...prev, [data.room]: true })); } }; const receiptHandler = (data) => { if (data.room === chatRoom) setMessageList((list) => [...list, data]); }; socket.on('receive_message', handler); socket.on('read_receipt', receiptHandler); return () => { socket.off('receive_message', handler); socket.off('read_receipt', receiptHandler); }; }, [chatRoom, adminName]);
   const sendMessage = async () => { if (currentMessage !== '' && chatRoom !== '') { const now = new Date(); const msgData = { room: chatRoom, author: adminName, message: currentMessage, time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), date: now.toLocaleDateString('en-GB'), type: 'text' }; await socket.emit('send_message', msgData); setMessageList((list) => [...list, msgData]); setCurrentMessage(''); } };
   const markAsRead = () => { if (chatRoom) { setUnreadRooms(prev => ({ ...prev, [chatRoom]: false })); socket.emit('mark_read', { room: chatRoom, reader: "Admin" }); } };
@@ -52,9 +52,9 @@ const AdminDashboard = () => {
   const toggleTeacherSubject = (grade, subject) => { setTSubjects(prev => { const gradeSubjects = prev[grade] || []; if (gradeSubjects.includes(subject)) return { ...prev, [grade]: gradeSubjects.filter(s => s !== subject) }; else return { ...prev, [grade]: [...gradeSubjects, subject] }; }); };
   const handleStudentGradeChange = (e) => { setSGrade(e.target.value); setSSubjects([]); };
   const toggleStudentSubject = (subject) => { setSSubjects(prev => prev.includes(subject) ? prev.filter(s => s !== subject) : [...prev, subject]); };
-  const handleAddTeacher = async (e) => { e.preventDefault(); try { setTMsg('Creating...'); const flatSubjects = []; Object.entries(tSubjects).forEach(([grade, subjects]) => { subjects.forEach(sub => flatSubjects.push(`${grade}: ${sub}`)); }); const res = await fetch('http://localhost:5000/api/admin/create-user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: tName, username: tUsername, password: tPassword, role: 'teacher', assignedGrades: tGrades, assignedSubjects: flatSubjects }) }); if (res.ok) { setTMsg('✅ Teacher Created!'); setTName(''); setTUsername(''); setTPassword(''); setTGrades([]); setTSubjects({}); fetchData(); } else setTMsg('❌ Failed to create'); } catch (err) { setTMsg('❌ Server Error'); } };
-  const handleAddStudent = async (e) => { e.preventDefault(); try { setSMsg('Creating...'); const flatStudentSubjects = sSubjects.map(sub => `${sGrade}: ${sub}`); const res = await fetch('http://localhost:5000/api/admin/create-user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: sName, username: sUsername, password: sPassword, role: 'student', grade: sGrade, startDate: sStartDate, assignedSubjects: flatStudentSubjects }) }); if (res.ok) { setSMsg('✅ Student Created!'); setSName(''); setSUsername(''); setSPassword(''); setSGrade(''); setSStartDate(''); setSSubjects([]); fetchData(); } else setSMsg('❌ Failed to create'); } catch (err) { setSMsg('❌ Server Error'); } };
-  const deleteNote = async (id) => { if (window.confirm("Admin: Permanently delete this note?")) { await fetch(`http://localhost:5000/api/notes/${id}`, { method: 'DELETE' }); fetchData(); } };
+  const handleAddTeacher = async (e) => { e.preventDefault(); try { setTMsg('Creating...'); const flatSubjects = []; Object.entries(tSubjects).forEach(([grade, subjects]) => { subjects.forEach(sub => flatSubjects.push(`${grade}: ${sub}`)); }); const res = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/admin/create-user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: tName, username: tUsername, password: tPassword, role: 'teacher', assignedGrades: tGrades, assignedSubjects: flatSubjects }) }); if (res.ok) { setTMsg('✅ Teacher Created!'); setTName(''); setTUsername(''); setTPassword(''); setTGrades([]); setTSubjects({}); fetchData(); } else setTMsg('❌ Failed to create'); } catch (err) { setTMsg('❌ Server Error'); } };
+  const handleAddStudent = async (e) => { e.preventDefault(); try { setSMsg('Creating...'); const flatStudentSubjects = sSubjects.map(sub => `${sGrade}: ${sub}`); const res = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/admin/create-user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: sName, username: sUsername, password: sPassword, role: 'student', grade: sGrade, startDate: sStartDate, assignedSubjects: flatStudentSubjects }) }); if (res.ok) { setSMsg('✅ Student Created!'); setSName(''); setSUsername(''); setSPassword(''); setSGrade(''); setSStartDate(''); setSSubjects([]); fetchData(); } else setSMsg('❌ Failed to create'); } catch (err) { setSMsg('❌ Server Error'); } };
+  const deleteNote = async (id) => { if (window.confirm("Admin: Permanently delete this note?")) { await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/notes/${id}`, { method: 'DELETE' }); fetchData(); } };
 
   return (
     <div className="dashboard-container">

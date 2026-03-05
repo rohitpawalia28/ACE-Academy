@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import './StudentDashboard.css';
 
-const socket = io.connect('http://localhost:5000');
+const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -39,24 +39,24 @@ const StudentDashboard = () => {
 
   const fetchAllData = async (user) => {
     try {
-      const profRes = await fetch(`http://localhost:5000/api/records/profile/${user}`);
+      const profRes = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/profile/${user}`);
       const profData = await profRes.json();
       setProfile(profData);
-      const statsRes = await fetch(`http://localhost:5000/api/records/stats/${user}`);
+      const statsRes = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/stats/${user}`);
       setStats(await statsRes.json());
       
       if (profData.grade) {
-        const notesRes = await fetch(`http://localhost:5000/api/notes/${profData.grade}`);
+        const notesRes = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/notes/${profData.grade}`);
         setNotesList(await notesRes.json());
-        const scheduleRes = await fetch(`http://localhost:5000/api/timetable/${profData.grade}`);
+        const scheduleRes = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/timetable/${profData.grade}`);
         setSchedule(await scheduleRes.json());
       }
 
-      const teachersRes = await fetch(`http://localhost:5000/api/records/teachers?student=${user}`);
+      const teachersRes = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/teachers?student=${user}`);
       const tData = await teachersRes.json();
       setTeachers(tData);
 
-      const adminRes = await fetch('http://localhost:5000/api/records/admins');
+      const adminRes = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/records/admins');
       const aData = await adminRes.json();
       setAdmins(aData);
 
@@ -75,7 +75,7 @@ const StudentDashboard = () => {
     setSelectedChatObj(contact);
     setChatRoom(contact.room);
     setUnreadRooms(prev => ({ ...prev, [contact.room]: false }));
-    fetch(`http://localhost:5000/api/chat/${contact.room}`).then(res => res.json()).then(data => setMessageList(data));
+    fetch(`https://ace-academy-backend-e0pi.onrender.com/api/chat/${contact.room}`).then(res => res.json()).then(data => setMessageList(data));
   };
 
   useEffect(() => {
@@ -108,7 +108,7 @@ const StudentDashboard = () => {
     }
   };
 
-  const handleLogout = async () => { await fetch('http://localhost:5000/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }); localStorage.clear(); navigate('/'); };
+  const handleLogout = async () => { await fetch('https://ace-academy-backend-e0pi.onrender.com/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }); localStorage.clear(); navigate('/'); };
   const handleNav = (tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); };
 
   if (!profile) return <div>Loading Profile...</div>;
@@ -188,7 +188,7 @@ const StudentDashboard = () => {
 
           {activeTab === 'timetable' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">My Classes (Timetable)</h3><div className="grid-list">{schedule.length === 0 ? <div className="empty-state">No upcoming classes scheduled.</div> : null}{schedule.map((cls, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#eff6ff', color: '#3b82f6' }}>⏰</div><div className="card-details"><h4>{cls.subject} - {cls.topic}</h4><p>Scheduled: {new Date(cls.date).toLocaleDateString('en-GB')}</p></div></div>))}</div></div>)}
 
-          {activeTab === 'notes' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">Class Notes & Resources</h3><div className="grid-list">{notesList.length === 0 ? <div className="empty-state">No notes uploaded yet.</div> : null}{notesList.map((note, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#ecfdf5', color: '#10b981' }}>📁</div><div className="card-details" style={{ flex: 1 }}><h4>{note.title}</h4><p>Uploaded by: {note.uploadedBy}</p></div><a href={`http://localhost:5000/${note.filePath.replace('\\', '/')}`} target="_blank" rel="noreferrer" className="modern-btn btn-primary">Download</a></div>))}</div></div>)}
+          {activeTab === 'notes' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">Class Notes & Resources</h3><div className="grid-list">{notesList.length === 0 ? <div className="empty-state">No notes uploaded yet.</div> : null}{notesList.map((note, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#ecfdf5', color: '#10b981' }}>📁</div><div className="card-details" style={{ flex: 1 }}><h4>{note.title}</h4><p>Uploaded by: {note.uploadedBy}</p></div><a href={`https://ace-academy-backend-e0pi.onrender.com/${note.filePath.replace('\\', '/')}`} target="_blank" rel="noreferrer" className="modern-btn btn-primary">Download</a></div>))}</div></div>)}
 
           {activeTab === 'marks' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">Exam Marks History</h3><div className="grid-list">{stats.marks && stats.marks.length === 0 ? <div className="empty-state">No exams graded yet.</div> : null}{stats.marks && stats.marks.map((mark, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#fef3c7', color: '#f59e0b' }}>📝</div><div className="card-details" style={{ flex: 1 }}><h4>{mark.subject} ({mark.topic})</h4><p>Date: {new Date(mark.date).toLocaleDateString()}</p></div><div className="marks-display"><div className="marks-score">{mark.marksObtained} / {mark.maxMarks}</div><div className={`status-badge ${mark.grade === 'Fail' ? 'badge-danger' : 'badge-success'}`}>{mark.grade}</div></div></div>))}</div></div>)}
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import './TeacherDashboard.css';
 
-const socket = io.connect('http://localhost:5000');
+const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -34,22 +34,22 @@ const TeacherDashboard = () => {
 
   const fetchData = async (user) => {
     try {
-      const profRes = await fetch(`http://localhost:5000/api/records/profile/${user}`);
+      const profRes = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/profile/${user}`);
       const profData = await profRes.json();
       setProfile(profData);
 
-      const adminRes = await fetch('http://localhost:5000/api/records/admins');
+      const adminRes = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/records/admins');
       const aData = await adminRes.json();
       setAdmins(aData);
 
-      const studentRes = await fetch(`http://localhost:5000/api/records/students?teacher=${user}`); 
+      const studentRes = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/students?teacher=${user}`); 
       const sData = await studentRes.json();
       setStudents(sData);
       setAttRecords(sData.map(s => ({ username: s.username, status: 'Present', grade: s.grade, markedBy: null })));
       setMarkRecords(sData.map(s => ({ username: s.username, marksObtained: '', grade: s.grade })));
 
-      const notesRes = await fetch('http://localhost:5000/api/notes'); setAllNotes(await notesRes.json());
-      const scheduleRes = await fetch('http://localhost:5000/api/timetable'); setAllSchedules(await scheduleRes.json());
+      const notesRes = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/notes'); setAllNotes(await notesRes.json());
+      const scheduleRes = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/timetable'); setAllSchedules(await scheduleRes.json());
 
       const contacts = [];
       profData.assignedGrades?.forEach(g => contacts.push({ id: `group_${g}`, name: `${g} Class Group`, room: `Group_${g}`, type: 'group', initial: 'G' }));
@@ -61,23 +61,23 @@ const TeacherDashboard = () => {
     } catch (err) { console.error(err); }
   };
 
-  const selectChat = (contact) => { setSelectedChatObj(contact); setChatRoom(contact.room); setUnreadRooms(prev => ({ ...prev, [contact.room]: false })); fetch(`http://localhost:5000/api/chat/${contact.room}`).then(res => res.json()).then(data => setMessageList(data)); };
+  const selectChat = (contact) => { setSelectedChatObj(contact); setChatRoom(contact.room); setUnreadRooms(prev => ({ ...prev, [contact.room]: false })); fetch(`https://ace-academy-backend-e0pi.onrender.com/api/chat/${contact.room}`).then(res => res.json()).then(data => setMessageList(data)); };
   useEffect(() => { const handler = (data) => { if (data.room === chatRoom) setMessageList((list) => [...list, data]); if (data.author !== username && data.type !== 'system') { if (data.room !== chatRoom) setUnreadRooms(prev => ({ ...prev, [data.room]: true })); } }; const receiptHandler = (data) => { if (data.room === chatRoom) setMessageList((list) => [...list, data]); }; socket.on('receive_message', handler); socket.on('read_receipt', receiptHandler); return () => { socket.off('receive_message', handler); socket.off('read_receipt', receiptHandler); }; }, [chatRoom, username]);
   const sendMessage = async () => { if (currentMessage !== '' && chatRoom !== '') { const now = new Date(); const msgData = { room: chatRoom, author: username, message: currentMessage, time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), date: now.toLocaleDateString('en-GB'), type: 'text' }; await socket.emit('send_message', msgData); setMessageList((list) => [...list, msgData]); setCurrentMessage(''); } };
   const markAsRead = () => { if (chatRoom) { setUnreadRooms(prev => ({ ...prev, [chatRoom]: false })); socket.emit('mark_read', { room: chatRoom, reader: profile.name || username }); } };
 
-  useEffect(() => { const fetchExistingAttendance = async () => { if (!attDate || students.length === 0) return; try { const res = await fetch(`http://localhost:5000/api/records/attendance/${attDate}`); const existingData = await res.json(); const mergedRecords = students.map(s => { const found = existingData.find(e => e.studentUsername === s.username); if (found) return { username: s.username, grade: s.grade, status: found.status, markedBy: found.markedBy }; return { username: s.username, grade: s.grade, status: 'Present', markedBy: null }; }); setAttRecords(mergedRecords); } catch (err) { console.error(err); } }; fetchExistingAttendance(); }, [attDate, students]);
+  useEffect(() => { const fetchExistingAttendance = async () => { if (!attDate || students.length === 0) return; try { const res = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/attendance/${attDate}`); const existingData = await res.json(); const mergedRecords = students.map(s => { const found = existingData.find(e => e.studentUsername === s.username); if (found) return { username: s.username, grade: s.grade, status: found.status, markedBy: found.markedBy }; return { username: s.username, grade: s.grade, status: 'Present', markedBy: null }; }); setAttRecords(mergedRecords); } catch (err) { console.error(err); } }; fetchExistingAttendance(); }, [attDate, students]);
   const getAllowedSubjects = (selectedGrade) => { if (!profile || !profile.assignedSubjects) return []; return profile.assignedSubjects.filter(sub => sub.startsWith(selectedGrade + ':')).map(sub => sub.split(': ')[1]); };
-  const handleLogout = async () => { await fetch('http://localhost:5000/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }); localStorage.clear(); navigate('/'); };
+  const handleLogout = async () => { await fetch('https://ace-academy-backend-e0pi.onrender.com/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }); localStorage.clear(); navigate('/'); };
   const handleNav = (tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); };
 
-  const handleFileUpload = async (e) => { e.preventDefault(); const formData = new FormData(); formData.append('title', uploadTitle); formData.append('batch', uploadBatch); formData.append('uploadedBy', username); formData.append('pdfFile', uploadFile); try { setUploadStatus('Uploading...'); const response = await fetch('http://localhost:5000/api/notes/upload', { method: 'POST', body: formData }); if (response.ok) { setUploadStatus('✅ Uploaded!'); fetchData(username); } else setUploadStatus('❌ Failed'); } catch (error) { setUploadStatus('❌ Error'); } };
-  const handleTimetableSubmit = async (e) => { e.preventDefault(); try { const response = await fetch('http://localhost:5000/api/timetable/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: timeDate, batch: timeBatch, subject: timeSubject, topic: timeTopic, postedBy: username }) }); if (response.ok) { setTimeStatus('✅ Published!'); fetchData(username); } else setTimeStatus('❌ Failed'); } catch (error) { setTimeStatus('❌ Error'); } };
-  const handleAttSubmit = async (e) => { e.preventDefault(); try { setAttStatusMsg('Saving...'); await fetch('http://localhost:5000/api/records/attendance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: attDate, records: attRecords, markedBy: username }) }); setAttStatusMsg('✅ Saved Successfully!'); } catch (err) { setAttStatusMsg('❌ Error'); } };
-  const handleMarksSubmit = async (e) => { e.preventDefault(); const finalizedRecords = markRecords.map(rec => { const percent = (Number(rec.marksObtained) / Number(maxMarks)) * 100; let grade = 'Fail'; if (percent >= 75) grade = 'Excellent'; else if (percent >= 50) grade = 'Good'; else if (percent > 33) grade = 'Needs Improvement'; return { username: rec.username, marksObtained: rec.marksObtained, grade: grade }; }); try { setMarkStatusMsg('Saving...'); await fetch('http://localhost:5000/api/records/marks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: markDate, subject: markSubject, topic: markTopic, maxMarks: Number(maxMarks), records: finalizedRecords }) }); setMarkStatusMsg('✅ Saved Successfully!'); } catch (err) { setMarkStatusMsg('❌ Error'); } };
-  const handleViewProgress = async (studentName) => { setViewStudent(studentName); if(studentName) { const res = await fetch(`http://localhost:5000/api/records/stats/${studentName}`); setStudentStats(await res.json()); } else setStudentStats(null); };
-  const deleteNote = async (id) => { if (window.confirm("Delete note?")) { await fetch(`http://localhost:5000/api/notes/${id}`, { method: 'DELETE' }); fetchData(username); } };
-  const deleteSchedule = async (id) => { if (window.confirm("Delete schedule?")) { await fetch(`http://localhost:5000/api/timetable/${id}`, { method: 'DELETE' }); fetchData(username); } };
+  const handleFileUpload = async (e) => { e.preventDefault(); const formData = new FormData(); formData.append('title', uploadTitle); formData.append('batch', uploadBatch); formData.append('uploadedBy', username); formData.append('pdfFile', uploadFile); try { setUploadStatus('Uploading...'); const response = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/notes/upload', { method: 'POST', body: formData }); if (response.ok) { setUploadStatus('✅ Uploaded!'); fetchData(username); } else setUploadStatus('❌ Failed'); } catch (error) { setUploadStatus('❌ Error'); } };
+  const handleTimetableSubmit = async (e) => { e.preventDefault(); try { const response = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/timetable/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: timeDate, batch: timeBatch, subject: timeSubject, topic: timeTopic, postedBy: username }) }); if (response.ok) { setTimeStatus('✅ Published!'); fetchData(username); } else setTimeStatus('❌ Failed'); } catch (error) { setTimeStatus('❌ Error'); } };
+  const handleAttSubmit = async (e) => { e.preventDefault(); try { setAttStatusMsg('Saving...'); await fetch('https://ace-academy-backend-e0pi.onrender.com/api/records/attendance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: attDate, records: attRecords, markedBy: username }) }); setAttStatusMsg('✅ Saved Successfully!'); } catch (err) { setAttStatusMsg('❌ Error'); } };
+  const handleMarksSubmit = async (e) => { e.preventDefault(); const finalizedRecords = markRecords.map(rec => { const percent = (Number(rec.marksObtained) / Number(maxMarks)) * 100; let grade = 'Fail'; if (percent >= 75) grade = 'Excellent'; else if (percent >= 50) grade = 'Good'; else if (percent > 33) grade = 'Needs Improvement'; return { username: rec.username, marksObtained: rec.marksObtained, grade: grade }; }); try { setMarkStatusMsg('Saving...'); await fetch('https://ace-academy-backend-e0pi.onrender.com/api/records/marks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: markDate, subject: markSubject, topic: markTopic, maxMarks: Number(maxMarks), records: finalizedRecords }) }); setMarkStatusMsg('✅ Saved Successfully!'); } catch (err) { setMarkStatusMsg('❌ Error'); } };
+  const handleViewProgress = async (studentName) => { setViewStudent(studentName); if(studentName) { const res = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/stats/${studentName}`); setStudentStats(await res.json()); } else setStudentStats(null); };
+  const deleteNote = async (id) => { if (window.confirm("Delete note?")) { await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/notes/${id}`, { method: 'DELETE' }); fetchData(username); } };
+  const deleteSchedule = async (id) => { if (window.confirm("Delete schedule?")) { await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/timetable/${id}`, { method: 'DELETE' }); fetchData(username); } };
 
   if (!profile) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#4F46E5', fontSize: '1.5rem', fontWeight: 'bold' }}>Loading Teacher Portal...</div>;
 
