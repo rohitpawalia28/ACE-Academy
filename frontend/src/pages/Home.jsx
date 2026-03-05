@@ -133,7 +133,7 @@ export default function Home() {
 
       <section className="hero">
         <div className="hero-content">
-          <div className="hero-badge">Admissions Open for 2024-25</div>
+          <div className="hero-badge">Admissions Open for 2026-27</div>
           <h1>
             Welcome to <span>Excellence</span>
           </h1>
@@ -282,7 +282,7 @@ export default function Home() {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2024 ACE Academy. All rights reserved.</p>
+          <p>© 2026 ACE Academy. All rights reserved.</p>
           <div>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
