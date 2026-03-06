@@ -102,9 +102,10 @@ html, body, #root, .home-page { margin: 0; padding: 0; width: 100%; }
 .hero h1 span { color: var(--ace-yellow); text-decoration: underline; text-decoration-color: rgba(193,0,0,.5); }
 .hero > .hero-content > p { max-width: 760px; margin: 0 auto 40px; color: #000; font-size: 20px; font-weight: 600; }
 
-.hero-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1000px; margin: 0 auto; }
+.hero-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1000px; margin: 0 auto; align-items: stretch; }
 .hero-card {
   position: relative; text-align: left; border-radius: 18px; overflow: hidden;
+  display: flex; flex-direction: column; gap: 10px; min-height: 355px;
   border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.58); backdrop-filter: blur(12px); padding: 24px;
   transition: .35s;
 }
@@ -116,7 +117,32 @@ html, body, #root, .home-page { margin: 0; padding: 0; width: 100%; }
 .hero-card h3 { margin: 0 0 12px; font-size: 34px; line-height: 1.1; }
 .hero-card h4 { margin: 0 0 6px; font-size: 22px; }
 .hero-card p { margin: 0 0 12px; font-size: 14px; color: rgba(255,255,255,.68); }
-.hero-date { margin-top: 8px; font-weight: 700; color: rgba(255,255,255,.9); }
+.hero-course-list { display: grid; gap: 10px; margin-bottom: 6px; }
+.hero-course-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.06);
+  font-size: 19px;
+  font-weight: 800;
+  color: rgba(255,255,255,.95);
+}
+.hero-date { margin-top: 2px; font-weight: 800; color: rgba(255,255,255,.95); font-size: 16px; }
+.hero-note { color: rgba(255,255,255,.78); font-size: 16px; }
+.launch-copy { color: rgba(255,255,255,.9); font-size: 18px; line-height: 1.55; max-width: 95%; }
+.launch-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; }
+.launch-tags span {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(193,0,0,.38);
+  background: rgba(193,0,0,.2);
+  color: #ff9c9c;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .4px;
+  padding: 7px 12px;
+}
 .hero-points {
   margin: 0 0 14px;
   padding-left: 20px;
@@ -275,6 +301,11 @@ html, body, #root, .home-page { margin: 0; padding: 0; width: 100%; }
   .hero h1 { font-size: 42px; }
   .hero > .hero-content > p { font-size: 16px; }
   .hero-card h3 { font-size: 28px; }
+  .hero-card { min-height: auto; padding: 20px; }
+  .hero-course-item { font-size: 15px; padding: 9px 11px; }
+  .hero-date { font-size: 15px; }
+  .hero-note { font-size: 14px; }
+  .launch-copy { font-size: 16px; max-width: 100%; }
   .features-grid { grid-template-columns: 1fr; }
   .director-points { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; align-items: flex-start; }
