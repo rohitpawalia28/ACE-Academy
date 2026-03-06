@@ -132,6 +132,9 @@ export default function Home() {
       </nav>
 
       <section className="hero">
+        <video className="hero-video" autoPlay loop muted playsInline preload="auto">
+          <source src="/background.mp4" type="video/mp4" />
+        </video>
         <div className="hero-content">
           <div className="hero-badge">Admissions Open for 2026-27</div>
           <h1>
