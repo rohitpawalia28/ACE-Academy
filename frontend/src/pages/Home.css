@@ -20,7 +20,15 @@ html, body, #root, .home-page { margin: 0; padding: 0; width: 100%; }
   padding: 16px 24px; background: rgba(0,0,0,.4); backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255,255,255,.1);
 }
-.brand { display: flex; flex-direction: column; text-decoration: none; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+.brand-text { display: flex; flex-direction: column; }
 .brand-main { color: var(--ace-yellow); font-weight: 900; font-size: 28px; line-height: 1; letter-spacing: -1px; }
 .brand-sub { color: rgba(255,255,255,.6); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
 
@@ -221,6 +229,7 @@ html, body, #root, .home-page { margin: 0; padding: 0; width: 100%; }
   .footer-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
+  .brand-logo { width: 34px; height: 34px; border-radius: 8px; }
   .brand-main { font-size: 22px; }
   .hero { padding-top: 95px; }
   .hero h1 { font-size: 42px; }
