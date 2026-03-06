@@ -116,6 +116,16 @@ html, body, #root, .home-page { margin: 0; padding: 0; width: 100%; }
 .hero-card h3 { margin: 0 0 12px; font-size: 34px; line-height: 1.1; }
 .hero-card h4 { margin: 0 0 6px; font-size: 22px; }
 .hero-card p { margin: 0 0 12px; font-size: 14px; color: rgba(255,255,255,.68); }
+.hero-date { margin-top: 8px; font-weight: 700; color: rgba(255,255,255,.9); }
+.hero-points {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  color: rgba(255,255,255,.85);
+}
+.hero-points li {
+  margin-bottom: 6px;
+  font-size: 15px;
+}
 
 .duration-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 .duration-btns button {

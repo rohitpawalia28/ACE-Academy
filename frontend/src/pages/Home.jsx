@@ -150,8 +150,15 @@ export default function Home() {
               <Clock className="card-watermark ace-yellow" />
               <div className="card-topline ace-yellow-line">Active Now</div>
               <h3>Ongoing Courses</h3>
+              <h4>3rd - 8th All Subjects</h4>
               <h4>9th - 10th Maths & Science</h4>
-              <p>Status: Deep diving into Trigonometry & Physics</p>
+              <h4>11th - 12th Accounts & Economics</h4>
+              <p className="hero-date">Ongoing from 8 March 2026</p>
+              <ul className="hero-points">
+                <li>Strong concept building for every class level</li>
+                <li>Regular assessments to track progress</li>
+                <li>Personalized attention and doubt support</li>
+              </ul>
               <div className="duration-btns">
                 <button>1 Month</button>
                 <button>6 Months</button>
@@ -162,17 +169,12 @@ export default function Home() {
             <div className="hero-card">
               <Star className="card-watermark ace-red" />
               <div className="card-topline ace-red-line">Launching Soon</div>
-              <h3>Upcoming Courses</h3>
-              <div className="upcoming-row">
-                <h4>3rd to 8th All Subjects</h4>
-                <span>Next Mon</span>
-              </div>
-              <p>Concept building + Regular Tests</p>
-              <div className="upcoming-row">
-                <h4>11th - 12th Commerce</h4>
-                <span>1st Next Month</span>
-              </div>
-              <p>Free Exam Oriented Notes</p>
+              <h3>New Courses Coming Soon</h3>
+              <ul className="hero-points">
+                <li>Advanced concept sessions for board preparation</li>
+                <li>Exam-oriented notes with structured practice</li>
+                <li>Regular tests with detailed performance review</li>
+              </ul>
             </div>
           </div>
 
