@@ -79,11 +79,8 @@ export default function Home() {
     <div className="home-page">
       <nav className="top-nav">
         <Link to="/" className="brand">
-          <img src="/logo.png" alt="ACE Academy Logo" className="brand-logo" />
-          <span className="brand-text">
-            <span className="brand-main">ACE ACADEMY</span>
-            <span className="brand-sub">Achievers' Centre of Education</span>
-          </span>
+          <span className="brand-main">ACE ACADEMY</span>
+          <span className="brand-sub">Achievers' Centre of Education</span>
         </Link>
 
         <div className="menu desktop-only">
