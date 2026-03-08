@@ -246,13 +246,21 @@ html, body, #root, .home-page { margin: 0; padding: 0; width: 100%; }
 .footer-brand small { display: block; margin: 6px 0 18px; color: rgba(255,255,255,.4); letter-spacing: 2px; text-transform: uppercase; font-size: 10px; }
 .footer-brand p { max-width: 420px; color: rgba(255,255,255,.65); font-size: 18px; line-height: 1.6; }
 
-.whatsapp {
-  display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 11px 16px;
-  border-radius: 16px; text-decoration: none; color: #000; background: var(--ace-yellow); font-weight: 800;
-}
 .footer h4 { margin: 0 0 12px; font-size: 22px; }
 .footer a { color: rgba(255,255,255,.55); text-decoration: none; display: block; margin-bottom: 10px; transition: .2s; }
 .footer a:hover { color: var(--ace-yellow); }
+.footer .whatsapp {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; margin-bottom: 0; padding: 11px 16px;
+  border-radius: 16px; text-decoration: none; color: #111827; background: var(--ace-yellow); font-weight: 800;
+  border: 1px solid rgba(0,0,0,.15); transition: background-color .2s, color .2s, transform .2s;
+}
+.footer .whatsapp svg { color: #111827; }
+.footer .whatsapp:hover {
+  background: #ffbf00;
+  color: #111827;
+  transform: translateY(-1px);
+}
+.footer .whatsapp:hover svg { color: #111827; }
 .footer p { color: rgba(255,255,255,.6); line-height: 1.6; display: flex; gap: 8px; align-items: flex-start; }
 
 .footer-bottom {
