@@ -150,29 +150,37 @@ export default function Home() {
               <Clock className="card-watermark ace-yellow" />
               <div className="card-topline ace-yellow-line">Active Now</div>
               <h3>Ongoing Courses</h3>
-              <h4>9th - 10th Maths & Science</h4>
-              <p>Status: Deep diving into Trigonometry & Physics</p>
-              <div className="duration-btns">
-                <button>1 Month</button>
-                <button>6 Months</button>
-                <button>1 Year</button>
+              <div className="hero-course-list">
+                <div className="hero-course-item">3rd - 8th All Subjects</div>
+                <div className="hero-course-item">9th - 10th Maths & Science</div>
+                <div className="hero-course-item">11th - 12th Accounts & Economics</div>
               </div>
+              <ul className="hero-points">
+                <li>Strong Concept Building</li>
+                <li>Exam Oriented Notes</li>
+                <li>Regular Assessments</li>
+                <li>Doubt Solving Sessions</li>
+                <li>Personalized Attention</li>
+              </ul>
             </div>
 
             <div className="hero-card">
               <Star className="card-watermark ace-red" />
               <div className="card-topline ace-red-line">Launching Soon</div>
-              <h3>Upcoming Courses</h3>
-              <div className="upcoming-row">
-                <h4>3rd to 8th All Subjects</h4>
-                <span>Next Mon</span>
+              <h3>New Courses Coming Soon</h3>
+              <p className="launch-copy">
+                Upcoming batches will open shortly with structured learning plans
+                and personal counselling support for every student.
+              </p>
+              <ul className="hero-points">
+                <li>New session batches for all levels</li>
+                <li>Early guidance before batch selection</li>
+                <li>Small batch size and focused mentoring</li>
+              </ul>
+              <div className="launch-tags">
+                <span>Admissions Opening Soon</span>
+                <span>Counselling Open</span>
               </div>
-              <p>Concept building + Regular Tests</p>
-              <div className="upcoming-row">
-                <h4>11th - 12th Commerce</h4>
-                <span>1st Next Month</span>
-              </div>
-              <p>Free Exam Oriented Notes</p>
             </div>
           </div>
 
