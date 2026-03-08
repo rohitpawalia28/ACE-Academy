@@ -44,7 +44,7 @@ const courses = [
     standard: "Regular total for 2 subjects: INR 14400",
     discount: "You save INR 900",
     paymentNote: "6-month combo plan available with month-by-month payment.",
-    chips: ["Commerce Focus", "Exam + Practical Prep"],
+    chips: ["Accounts + Economics Track", "Board Exam Oriented"],
   },
 ];
 
