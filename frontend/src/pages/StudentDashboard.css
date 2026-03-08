@@ -187,3 +187,8 @@ body { margin: 0; padding: 0; }
   font-weight: 800;
   letter-spacing: -120px;
 }
+
+@keyframes dashboardSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

@@ -111,7 +111,54 @@ const StudentDashboard = () => {
   const handleLogout = async () => { await fetch('https://ace-academy-backend-e0pi.onrender.com/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }); localStorage.clear(); navigate('/'); };
   const handleNav = (tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); };
 
-  if (!profile) return <div>Loading Profile...</div>;
+  if (!profile) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(180deg, #fffef7 0%, #f8fafc 100%)',
+          padding: '20px',
+        }}
+      >
+        <div
+          style={{
+            textAlign: 'center',
+            border: '1px solid #e2e8f0',
+            borderRadius: '20px',
+            background: '#ffffff',
+            boxShadow: '0 16px 30px rgba(15, 23, 42, 0.08)',
+            padding: '26px 22px',
+            maxWidth: '360px',
+            width: '100%',
+          }}
+        >
+          <img
+            src="/ace-logo.png"
+            alt="ACE Academy"
+            style={{ width: '78px', height: '78px', objectFit: 'contain', marginBottom: '12px' }}
+          />
+          <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Preparing Your Dashboard</h3>
+          <p style={{ margin: '0 0 16px 0', color: '#64748b', fontWeight: 500 }}>
+            Loading classes, notes, attendance, and chat.
+          </p>
+          <div
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              border: '3px solid #fde68a',
+              borderTopColor: '#c10000',
+              margin: '0 auto',
+              animation: 'dashboardSpin 0.8s linear infinite',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   const attPercent = stats?.attendance?.percent !== undefined ? stats.attendance.percent : 0;
   let attStatusText = "Caution, you need to attend all classes."; let attStatusColor = "#ef4444"; 
