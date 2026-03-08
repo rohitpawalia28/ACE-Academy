@@ -15,6 +15,17 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedRole = (localStorage.getItem('role') || '').toLowerCase().trim();
+
+    if (!token) return;
+
+    if (storedRole === 'student') navigate('/student-dashboard', { replace: true });
+    else if (storedRole === 'teacher') navigate('/teacher-dashboard', { replace: true });
+    else if (storedRole === 'admin') navigate('/admin-dashboard', { replace: true });
+  }, [navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevents the page from refreshing
     setError('');
