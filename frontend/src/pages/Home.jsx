@@ -194,7 +194,7 @@ export default function Home() {
       <section className="why-section">
         <div className="section-head">
           <h2>
-            Why <span>Gen-Z</span> Students Choose ACE Academy?
+            Why <span>Gen-Z & Alpha</span> Students Choose ACE Academy?
           </h2>
           <p>
             We combine traditional teaching excellence with modern learning methods
