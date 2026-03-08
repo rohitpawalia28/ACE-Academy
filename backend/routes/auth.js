@@ -99,4 +99,51 @@ router.post('/logout', async (req, res) => {
     }
 });
 
+// --- ROUTE 4: CHANGE PASSWORD ---
+router.post('/change-password', async (req, res) => {
+    try {
+        const { username, currentPassword, newPassword, confirmNewPassword } = req.body;
+
+        if (!username || !currentPassword || !newPassword || !confirmNewPassword) {
+            return res.status(400).json({ message: 'All password fields are required' });
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            return res.status(400).json({ message: 'New password and confirm password do not match' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+        }
+
+        const user = await User.findOne({ username });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const isCurrentValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isCurrentValid) {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+
+        const isSameAsOld = await bcrypt.compare(newPassword, user.password);
+        if (isSameAsOld) {
+            return res.status(400).json({ message: 'New password must be different from current password' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        const passwordLog = new Log({
+            username: user.username,
+            role: user.role,
+            action: 'Password Changed'
+        });
+        await passwordLog.save();
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error during password change' });
+    }
+});
+
 module.exports = router;

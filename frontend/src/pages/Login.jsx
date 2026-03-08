@@ -12,6 +12,7 @@ const Login = () => {
   // State to hold what the user types
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -89,12 +90,20 @@ const Login = () => {
           <div className="input-group">
             <label>Password</label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Enter your password"
             />
+            <label className="show-password-row">
+              <input
+                type="checkbox"
+                checked={showPassword}
+                onChange={(e) => setShowPassword(e.target.checked)}
+              />
+              <span>Show password</span>
+            </label>
           </div>
 
           <button type="submit" className="login-submit-btn" disabled={loading}>

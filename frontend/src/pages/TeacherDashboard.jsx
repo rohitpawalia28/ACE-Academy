@@ -21,6 +21,12 @@ const TeacherDashboard = () => {
   const [viewStudent, setViewStudent] = useState(''); const [studentStats, setStudentStats] = useState(null);
 
   const [chatContacts, setChatContacts] = useState([]); const [selectedChatObj, setSelectedChatObj] = useState(null); const [chatRoom, setChatRoom] = useState(''); const [currentMessage, setCurrentMessage] = useState(''); const [messageList, setMessageList] = useState([]); const [unreadRooms, setUnreadRooms] = useState({}); 
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,6 +37,14 @@ const TeacherDashboard = () => {
     if (!token || safeRole !== 'teacher') { localStorage.clear(); navigate('/'); } 
     else { setUsername(storedUsername); socket.emit('register_user', storedUsername); fetchData(storedUsername); }
   }, [navigate]);
+
+  useEffect(() => {
+    const handlePageClick = (e) => {
+      if (!e.target.closest('.profile-menu-wrap')) setIsProfileMenuOpen(false);
+    };
+    document.addEventListener('click', handlePageClick);
+    return () => document.removeEventListener('click', handlePageClick);
+  }, []);
 
   const fetchData = async (user) => {
     try {
@@ -70,6 +84,59 @@ const TeacherDashboard = () => {
   const getAllowedSubjects = (selectedGrade) => { if (!profile || !profile.assignedSubjects) return []; return profile.assignedSubjects.filter(sub => sub.startsWith(selectedGrade + ':')).map(sub => sub.split(': ')[1]); };
   const handleLogout = async () => { await fetch('https://ace-academy-backend-e0pi.onrender.com/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }); localStorage.clear(); navigate('/'); };
   const handleNav = (tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); };
+  const openChangePasswordModal = () => {
+    setPasswordForm({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+    setPasswordError('');
+    setPasswordSuccess('');
+    setIsChangePasswordOpen(true);
+    setIsProfileMenuOpen(false);
+  };
+  const closeChangePasswordModal = () => {
+    setIsChangePasswordOpen(false);
+    setPasswordError('');
+    setPasswordSuccess('');
+    setPasswordForm({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+  };
+  const handlePasswordFieldChange = (field, value) => {
+    setPasswordForm((prev) => ({ ...prev, [field]: value }));
+  };
+  const handlePasswordChangeSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    const { currentPassword, newPassword, confirmNewPassword } = passwordForm;
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordError('Please fill all password fields.');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError('New password and confirm password do not match.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters.');
+      return;
+    }
+
+    try {
+      setIsChangingPassword(true);
+      const response = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, currentPassword, newPassword, confirmNewPassword }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Password change failed');
+      setPasswordSuccess(data.message || 'Password changed successfully.');
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+    } catch (error) {
+      setPasswordError(error.message || 'Unable to change password.');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   const handleFileUpload = async (e) => { e.preventDefault(); const formData = new FormData(); formData.append('title', uploadTitle); formData.append('batch', uploadBatch); formData.append('uploadedBy', username); formData.append('pdfFile', uploadFile); try { setUploadStatus('Uploading...'); const response = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/notes/upload', { method: 'POST', body: formData }); if (response.ok) { setUploadStatus('✅ Uploaded!'); fetchData(username); } else setUploadStatus('❌ Failed'); } catch (error) { setUploadStatus('❌ Error'); } };
   const handleTimetableSubmit = async (e) => { e.preventDefault(); try { const response = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/timetable/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: timeDate, batch: timeBatch, subject: timeSubject, topic: timeTopic, postedBy: username }) }); if (response.ok) { setTimeStatus('✅ Published!'); fetchData(username); } else setTimeStatus('❌ Failed'); } catch (error) { setTimeStatus('❌ Error'); } };
@@ -104,11 +171,10 @@ const TeacherDashboard = () => {
           <button className={`nav-item ${activeTab === 'progress' ? 'active' : ''}`} onClick={() => handleNav('progress')}><span className="nav-icon">📊</span> Student Progress</button>
           <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon">💬</span> Live Chat</button>
         </nav>
-        <button className="logout-btn" onClick={handleLogout}>🚪 Secure Logout</button>
       </aside>
 
       <main className="main-content">
-        <header className="dashboard-header"><div><h1>Faculty Dashboard</h1><p className="date-display">{new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p></div><div className="user-profile-badge"><div className="avatar">{profile.name ? profile.name.charAt(0).toUpperCase() : 'T'}</div><span>{profile.name || username}</span></div></header>
+        <header className="dashboard-header"><div><h1>Faculty Dashboard</h1><p className="date-display">{new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p></div><div className="profile-menu-wrap" style={{ position: 'relative' }}><button className="user-profile-badge" style={{ border: 'none', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); setIsProfileMenuOpen((prev) => !prev); }}><div className="avatar">{profile.name ? profile.name.charAt(0).toUpperCase() : 'T'}</div><span>{profile.name || username}</span></button>{isProfileMenuOpen && (<div style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', minWidth: '210px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 10px 25px rgba(15, 23, 42, 0.12)', padding: '8px', zIndex: 200 }}><button className="modern-btn btn-primary" style={{ width: '100%', marginBottom: '8px' }} onClick={openChangePasswordModal}>Change Password</button><button className="modern-btn btn-danger" style={{ width: '100%' }} onClick={handleLogout}>Secure Logout</button></div>)}</div></header>
 
         {activeTab === 'dashboard' && (<div className="welcome-banner"><div className="banner-content"><h2>Welcome, <span className="highlight-name">{profile.name || username}</span></h2><p className="banner-subtitle">Here is an overview of your teaching assignments.</p><div className="profile-grid"><div className="profile-card"><span className="label">Assigned Classes</span><span className="value">{profile.assignedGrades?.join(', ') || 'None'}</span></div><div className="profile-card"><span className="label">Assigned Subjects</span><span className="value" style={{fontSize: '0.9rem'}}>{profile.assignedSubjects?.join(', ') || 'None'}</span></div></div></div></div>)}
         {activeTab === 'timetable' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '800px' }}><h3 className="widget-title">Update Timetable</h3><form className="quick-form" onSubmit={handleTimetableSubmit}><div className="form-row"><input type="date" className="modern-input" value={timeDate} onChange={(e) => setTimeDate(e.target.value)} required /><select className="modern-select" value={timeBatch} onChange={(e) => { setTimeBatch(e.target.value); setTimeSubject(''); }} required><option value="">Select Grade</option>{profile.assignedGrades.map(g => <option key={g} value={g}>{g}</option>)}</select><select className="modern-select" value={timeSubject} onChange={(e) => setTimeSubject(e.target.value)} required disabled={!timeBatch}><option value="">Select Subject</option>{getAllowedSubjects(timeBatch).map(s => <option key={s} value={s}>{s}</option>)}</select></div><input type="text" className="modern-input" placeholder="Topic to be covered..." value={timeTopic} onChange={(e) => setTimeTopic(e.target.value)} required /><button type="submit" className="modern-btn btn-primary">Publish Schedule</button></form>{timeStatus && <p style={{color: 'green', marginTop: '10px'}}>{timeStatus}</p>}<h3 className="widget-title" style={{marginTop: '30px', borderTop: '1px solid #eee', paddingTop: '20px'}}>Recently Published</h3><div className="grid-list">{allSchedules.filter(s => profile.assignedGrades.includes(s.batch)).map(s => (<div key={s._id} className="modern-card"><div className="card-details"><h4>{s.subject} <span style={{color: '#888', fontSize: '0.85rem'}}>({s.batch})</span></h4><p>{s.topic} • {new Date(s.date).toLocaleDateString('en-GB')}</p></div><button onClick={()=>deleteSchedule(s._id)} className="modern-btn btn-danger">Delete</button></div>))}</div></div>)}
@@ -163,6 +229,49 @@ const TeacherDashboard = () => {
                   <div className="empty-chat-state"></div>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+        {isChangePasswordOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.45)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 3000,
+              padding: '16px',
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '440px',
+                background: '#fff',
+                borderRadius: '16px',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 20px 45px rgba(15, 23, 42, 0.2)',
+                padding: '20px',
+              }}
+            >
+              <h3 style={{ margin: '0 0 14px 0', color: '#1e293b' }}>Change Password</h3>
+              <form className="quick-form" onSubmit={handlePasswordChangeSubmit}>
+                <input type="password" className="modern-input" placeholder="Current Password" value={passwordForm.currentPassword} onChange={(e) => handlePasswordFieldChange('currentPassword', e.target.value)} required />
+                <input type="password" className="modern-input" placeholder="New Password" value={passwordForm.newPassword} onChange={(e) => handlePasswordFieldChange('newPassword', e.target.value)} required />
+                <input type="password" className="modern-input" placeholder="Confirm New Password" value={passwordForm.confirmNewPassword} onChange={(e) => handlePasswordFieldChange('confirmNewPassword', e.target.value)} required />
+                {passwordError ? <p style={{ margin: 0, color: '#dc2626', fontWeight: 600 }}>{passwordError}</p> : null}
+                {passwordSuccess ? <p style={{ margin: 0, color: '#16a34a', fontWeight: 600 }}>{passwordSuccess}</p> : null}
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                  <button type="button" className="modern-btn" style={{ background: '#e2e8f0', color: '#1f2937' }} onClick={closeChangePasswordModal}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="modern-btn btn-primary" disabled={isChangingPassword}>
+                    {isChangingPassword ? 'Updating...' : 'Update Password'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

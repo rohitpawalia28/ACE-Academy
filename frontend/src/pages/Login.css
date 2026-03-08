@@ -68,6 +68,22 @@
   font-size: 1rem;
 }
 
+.show-password-row {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #555;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.show-password-row input {
+  width: auto;
+  margin: 0;
+}
+
 .login-submit-btn {
   width: 100%;
   padding: 12px;
