@@ -171,6 +171,7 @@ export default function Home() {
                 <span>Admissions Opening Soon</span>
                 <span>Counselling Available</span>
               </div>
+              <p>Free Exam Oriented Notes</p>
             </div>
           </div>
 
