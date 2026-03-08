@@ -45,7 +45,9 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     const handlePageClick = (e) => {
-      if (!e.target.closest('.profile-menu-wrap')) setIsProfileMenuOpen(false);
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      if (!target.closest('.profile-menu-wrap')) setIsProfileMenuOpen(false);
     };
     document.addEventListener('click', handlePageClick);
     return () => document.removeEventListener('click', handlePageClick);
