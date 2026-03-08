@@ -98,15 +98,15 @@ export default function Home() {
               </div>
               <div className="courses-list">
                 <div className="course-item-mini">
-                  <h5>9th - 10th Maths & Science</h5>
-                  <p>In-depth coverage of Physics.</p>
-                </div>
-                <div className="course-item-mini">
                   <h5>3rd - 8th All Subjects</h5>
                   <p>Foundation building.</p>
                 </div>
                 <div className="course-item-mini">
-                  <h5>11th - 12th Commerce</h5>
+                  <h5>9th - 10th Maths & Science</h5>
+                  <p>In-depth coverage of Topics.</p>
+                </div>
+                <div className="course-item-mini">
+                  <h5>11th - 12th Accounts and Economics</h5>
                   <p>Specialized notes.</p>
                 </div>
               </div>
