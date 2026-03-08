@@ -150,35 +150,36 @@ export default function Home() {
               <Clock className="card-watermark ace-yellow" />
               <div className="card-topline ace-yellow-line">Active Now</div>
               <h3>Ongoing Courses</h3>
-              <div className="hero-course-list">
-                <div className="hero-course-item">3rd - 8th All Subjects</div>
-                <div className="hero-course-item">9th - 10th Maths & Science</div>
-                <div className="hero-course-item">11th - 12th Accounts & Economics</div>
+              <h4>9th - 10th Maths & Science</h4>
+              <p>Status: Deep diving into Trigonometry & Physics</p>
+              <div className="duration-btns">
+                <button>1 Month</button>
+                <button>6 Months</button>
+                <button>1 Year</button>
               </div>
-              <p className="hero-date">Batches running from 8 March 2026</p>
-              <p className="hero-note">Small batch sizes with personalized guidance.</p>
             </div>
 
             <div className="hero-card">
               <Star className="card-watermark ace-red" />
               <div className="card-topline ace-red-line">Launching Soon</div>
-              <h3>New Courses Coming Soon</h3>
-              <p className="launch-copy">
-                Fresh batches for new students will open shortly with structured learning
-                plans and focused academic mentoring.
-              </p>
-              <div className="launch-tags">
-                <span>Admissions Opening Soon</span>
-                <span>Counselling Available</span>
+              <h3>Upcoming Courses</h3>
+              <div className="upcoming-row">
+                <h4>3rd to 8th All Subjects</h4>
+                <span>Next Mon</span>
+              </div>
+              <p>Concept building + Regular Tests</p>
+              <div className="upcoming-row">
+                <h4>11th - 12th Commerce</h4>
+                <span>1st Next Month</span>
               </div>
               <p>Free Exam Oriented Notes</p>
             </div>
           </div>
 
-          <div className="explore-more">
-            <small>Explore More</small>
+          <Link to="/courses" className="explore-more" style={{ textDecoration: "none" }}>
+            <small>Explore More Courses....</small>
             <ArrowRight size={18} />
-          </div>
+          </Link>
         </div>
       </section>
 
