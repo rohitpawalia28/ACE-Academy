@@ -54,6 +54,19 @@ body { margin: 0; padding: 0; }
 .date-display { color: var(--text-muted); margin-top: 5px; font-weight: 500; }
 .user-profile-badge { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 16px 8px 8px; border-radius: 50px; box-shadow: var(--shadow-sm); font-weight: 600; color: var(--text-dark); }
 .avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.profile-menu-wrap { position: relative; }
+.profile-menu-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 210px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  padding: 8px;
+  z-index: 200;
+}
 
 /* --- MODERN WIDGETS & CARDS --- */
 .modern-widget { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-color); margin-bottom: 25px;}
@@ -154,6 +167,11 @@ body { margin: 0; padding: 0; }
   .main-content { height: calc(100vh - 65px); padding: 20px; }
   .dashboard-header { flex-direction: column; align-items: flex-start; gap: 15px; }
   .user-profile-badge { align-self: flex-start; }
+  .profile-menu-popover {
+    left: 0;
+    right: auto;
+    min-width: min(220px, calc(100vw - 40px));
+  }
   .welcome-banner h2 { font-size: 1.8rem; }
   
   /* Make WhatsApp chat stack vertically on small screens */

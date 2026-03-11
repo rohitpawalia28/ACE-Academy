@@ -264,7 +264,7 @@ const StudentDashboard = () => {
       <main className="main-content">
         <header className="dashboard-header">
           <div><h1>Student Portal</h1><p className="date-display">{new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p></div>
-          <div className="profile-menu-wrap" style={{ position: 'relative' }}>
+          <div className="profile-menu-wrap">
             <button
               className="user-profile-badge"
               style={{ border: 'none', cursor: 'pointer' }}
@@ -277,20 +277,7 @@ const StudentDashboard = () => {
               <span>{profile.name || username}</span>
             </button>
             {isProfileMenuOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  right: 0,
-                  top: 'calc(100% + 8px)',
-                  minWidth: '210px',
-                  background: '#fff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '12px',
-                  boxShadow: '0 10px 25px rgba(15, 23, 42, 0.12)',
-                  padding: '8px',
-                  zIndex: 200,
-                }}
-              >
+              <div className="profile-menu-popover">
                 <button className="modern-btn btn-primary" style={{ width: '100%', marginBottom: '8px' }} onClick={openChangePasswordModal}>
                   Change Password
                 </button>
