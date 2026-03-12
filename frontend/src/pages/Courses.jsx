@@ -74,7 +74,7 @@ export default function Courses() {
           <ArrowLeft size={16} />
           <span>Back to Home</span>
         </Link>
-        <div className="courses-brand">ACE Academy</div>
+        <div className="courses-brand">ACE INSTITUTE</div>
       </header>
 
       <main className="courses-main">
