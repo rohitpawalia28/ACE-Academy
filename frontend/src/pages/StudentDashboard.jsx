@@ -8,16 +8,16 @@ const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [profile, setProfile] = useState(null); 
+  const [profile, setProfile] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [notesList, setNotesList] = useState([]);
-  const [schedule, setSchedule] = useState([]); 
+  const [schedule, setSchedule] = useState([]);
   const [stats, setStats] = useState({ attendance: { percent: 0, total: 0, present: 0, history: [] }, marks: [] });
   
   const [teachers, setTeachers] = useState([]);
-  const [admins, setAdmins] = useState([]); 
+  const [admins, setAdmins] = useState([]);
 
   const [chatContacts, setChatContacts] = useState([]);
   const [selectedChatObj, setSelectedChatObj] = useState(null);
@@ -35,7 +35,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedName = localStorage.getItem('username');
-    if (!token || localStorage.getItem('role') !== 'student') navigate('/login?role=student'); 
+    if (!token || localStorage.getItem('role') !== 'student') navigate('/login?role=student');
     else {
       setUsername(storedName);
       socket.emit('register_user', storedName);
@@ -206,7 +206,7 @@ const StudentDashboard = () => {
         >
           <img
             src="/ace-logo.png"
-            alt="ACE Academy"
+            alt="ACE INSTITUTE"
             style={{ width: '78px', height: '78px', objectFit: 'contain', marginBottom: '12px' }}
           />
           <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Preparing Your Dashboard</h3>
@@ -238,7 +238,7 @@ const StudentDashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="mobile-header">
-        <div className="mobile-logo-text"><span className="logo-text">ACE</span> Academy</div>
+        <div className="mobile-logo-text"><span className="logo-text">ACE</span> INSTITUTE</div>
         <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</button>
       </div>
 
@@ -248,7 +248,7 @@ const StudentDashboard = () => {
         <div className="sidebar-logo">
           <img src="/logo.png" alt="ACE Logo" className="sidebar-logo-img" />
           <div>
-            <span className="logo-text">ACE</span> Academy
+            <span className="logo-text">ACE</span> INSTITUTE
           </div>
         </div>
         <nav className="sidebar-nav">

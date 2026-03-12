@@ -79,7 +79,7 @@ export default function Home() {
     <div className="home-page">
       <nav className="top-nav">
         <Link to="/" className="brand">
-          <span className="brand-main">ACE ACADEMY</span>
+          <span className="brand-main">ACE INSTITUTE</span>
           <span className="brand-sub">Achievers' Centre of Education</span>
         </Link>
 
@@ -194,7 +194,7 @@ export default function Home() {
       <section className="why-section">
         <div className="section-head">
           <h2>
-            Why <span>Gen-Z & Alpha</span> Students Choose ACE Academy?
+            Why <span>Gen-Z & Alpha</span> Students Choose ACE INSTITUTE?
           </h2>
           <p>
             We combine traditional teaching excellence with modern learning methods
@@ -241,7 +241,7 @@ export default function Home() {
             <span>B.Ed</span>
           </div>
           <p className="quote">
-            "At ACE Academy, we don't just teach subjects; we build foundations.
+            "At ACE INSTITUTE, we don't just teach subjects; we build foundations.
             Our mission is to provide every student with the clarity they need to excel in their academic journey."
           </p>
           <div className="director-points">
@@ -266,7 +266,7 @@ export default function Home() {
       <footer className="footer">
         <div className="footer-grid">
           <div className="footer-brand">
-            <h3>ACE ACADEMY</h3>
+            <h3>ACE INSTITUTE</h3>
             <small>Achievers' Centre of Education</small>
             <p>
               Leading the way in quality education with a focus on concept building,
@@ -288,12 +288,12 @@ export default function Home() {
             <h4>Contact Us</h4>
             <p><MapPin size={16} /> 23A, T.P Scheme - 9, Behind Shopping Complex, Rewari</p>
             <p><Phone size={16} /> 8053515171</p>
-            <p><Mail size={16} /> contact@aceacademy.com</p>
+            <p><Mail size={16} /> mathswithmuskankalra@gmail.com</p>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>© 2026 ACE Academy. All rights reserved.</p>
+          <p>© 2026 ACE Institute. All rights reserved.</p>
           <div>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>

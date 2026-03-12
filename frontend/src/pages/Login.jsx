@@ -69,7 +69,7 @@ const Login = () => {
       <div className="login-box">
         <div className="login-header">
           <img src="/ace-logo.png" alt="ACE Logo" className="login-logo" />
-          <h2>ACE Academy</h2>
+          <h2>ACE INSTITUTE</h2>
           <p>{role.charAt(0).toUpperCase() + role.slice(1)} Portal</p>
         </div>
 

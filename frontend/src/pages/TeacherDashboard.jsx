@@ -154,7 +154,7 @@ const TeacherDashboard = () => {
     <div className="dashboard-container">
       {/* --- NEW MOBILE HEADER --- */}
       <div className="mobile-header">
-        <div className="mobile-logo-text"><span className="logo-text">ACE</span> Academy</div>
+        <div className="mobile-logo-text"><span className="logo-text">ACE</span> INSTITUTE</div>
         <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</button>
       </div>
 
