@@ -83,7 +83,14 @@ const TeacherDashboard = () => {
   const markAsRead = () => { if (chatRoom) { setUnreadRooms(prev => ({ ...prev, [chatRoom]: false })); socket.emit('mark_read', { room: chatRoom, reader: profile.name || username }); } };
 
   useEffect(() => { const fetchExistingAttendance = async () => { if (!attDate || students.length === 0) return; try { const res = await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/records/attendance/${attDate}`); const existingData = await res.json(); const mergedRecords = students.map(s => { const found = existingData.find(e => e.studentUsername === s.username); if (found) return { username: s.username, grade: s.grade, status: found.status, markedBy: found.markedBy }; return { username: s.username, grade: s.grade, status: 'Present', markedBy: null }; }); setAttRecords(mergedRecords); } catch (err) { console.error(err); } }; fetchExistingAttendance(); }, [attDate, students]);
-  const getAllowedSubjects = (selectedGrade) => { if (!profile || !profile.assignedSubjects) return []; return profile.assignedSubjects.filter(sub => sub.startsWith(selectedGrade + ':')).map(sub => sub.split(': ')[1]); };
+  const getAllowedSubjects = (selectedGrade) => {
+    if (!profile || !profile.assignedSubjects) return [];
+    const subjects = profile.assignedSubjects
+      .filter(sub => sub.startsWith(selectedGrade + ':'))
+      .map(sub => sub.split(': ')[1]);
+    if (subjects.includes('All Subjects')) return ['Math', 'Science', 'SST', 'English'];
+    return subjects;
+  };
   const handleLogout = async () => { await fetch('https://ace-academy-backend-e0pi.onrender.com/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }); localStorage.clear(); navigate('/'); };
   const handleNav = (tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); };
   const openChangePasswordModal = () => {
