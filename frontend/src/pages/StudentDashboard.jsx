@@ -89,6 +89,11 @@ const StudentDashboard = () => {
     } catch (error) { console.error("Error fetching data:", error); }
   };
 
+  const displayName = (u) => {
+    if (u === username) return profile?.name || u;
+    return teachers.find((t) => t.username === u)?.name || admins.find((a) => a.username === u)?.name || u;
+  };
+
   const selectChat = (contact) => {
     setSelectedChatObj(contact);
     setChatRoom(contact.room);
@@ -250,7 +255,7 @@ const StudentDashboard = () => {
         </header>
 
         <div className="content-wrapper">
-          {activeTab === 'dashboard' && (<div className="welcome-banner"><div className="banner-content"><h2>Welcome back, <span className="highlight-name">{profile.name || username}</span>!</h2><p className="banner-subtitle">Here is an overview of your academic profile.</p><div className="profile-grid"><div className="profile-card"><span className="label">Class/Grade</span><span className="value">{profile.grade || 'Not Assigned'}</span></div><div className="profile-card"><span className="label">Timing</span><span className="value">{profile.timing || 'TBD'}</span></div><div className="profile-card"><span className="label">Fee Structure</span><span className="value">{profile.feeStructure || 'Pending'}</span></div><div className="profile-card"><span className="label">Started On</span><span className="value">{profile.startDate || 'Unknown'}</span></div></div></div></div>)}
+          {activeTab === 'dashboard' && (<div className="welcome-banner"><div className="banner-content"><h2>Welcome back, <span className="highlight-name">{profile.name || username}</span>!</h2><p className="banner-subtitle">Here is an overview of your academic profile.</p><div className="profile-grid"><div className="profile-card"><span className="label">Class/Grade</span><span className="value">{profile.grade || 'Not Assigned'}</span></div><div className="profile-card"><span className="label">Timing</span><span className="value">{profile.timing || 'TBD'}</span></div><div className="profile-card"><span className="label">Fee Structure</span><span className="value">{profile.feeStructure || 'Pending'}</span></div><div className="profile-card"><span className="label">Started On</span><span className="value">{profile.startDate || 'Unknown'}</span></div><div className="profile-card"><span className="label">Subjects</span><span className="value">{(profile.assignedSubjects || []).map((sub) => sub.split(': ')[1]).map((sub) => ({ Math: 'Mathematics', Account: 'Accountancy', Eco: 'Economics' }[sub] || sub)).join(', ') || 'Not Assigned'}</span></div></div></div></div>)}
 
           {activeTab === 'attendance' && (
             <div className="tab-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '25px', maxWidth: '850px' }}>
@@ -318,7 +323,7 @@ const StudentDashboard = () => {
                             <div key={index} className="system-message">{msg.message} • {msg.time} ({msg.date})</div>
                           ) : (
                             <div key={index} className={`chat-bubble ${msg.author === username ? 'sent' : 'received'}`}>
-                              <div className="chat-meta">{msg.author}</div>
+                              <div className="chat-meta">{displayName(msg.author)}</div>
                               <div className="chat-text">{msg.message}</div>
                               <div className="chat-time-date">{msg.time} • {msg.date}</div>
                             </div>

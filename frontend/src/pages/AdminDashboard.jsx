@@ -26,7 +26,8 @@ const getStudentSubjectsForGrade = (grade) => {
   return [];
 };
 
-const formatSubjectAssignments = (subjects) => subjects.map((subject) => `${subject}`);
+const subjectLabels = { Math: 'Mathematics', Science: 'Science', Account: 'Accountancy', Eco: 'Economics' };
+const subjectLabel = (subject) => subjectLabels[subject] || subject;
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -147,6 +148,8 @@ export default function AdminDashboard() {
     socket.emit('mark_read', { room: chatRoom, reader: 'Admin' });
   };
 
+  const displayName = (u) => allUsers.find((user) => user.username === u)?.name || u;
+
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
@@ -183,6 +186,10 @@ export default function AdminDashboard() {
       }
       return { ...prev, [grade]: [...currentSubjects, subject] };
     });
+  };
+
+  const toggleStudentSubject = (subject) => {
+    setSSubjects((prev) => (prev.includes(subject) ? prev.filter((item) => item !== subject) : [...prev, subject]));
   };
 
   const handleStudentGradeChange = (e) => {
@@ -238,9 +245,15 @@ export default function AdminDashboard() {
   const handleAddStudent = async (e) => {
     e.preventDefault();
     try {
+      const chosenSubjects = isAllSubjectsGrade(sGrade)
+        ? getStudentSubjectsForGrade(sGrade)
+        : getStudentSubjectsForGrade(sGrade).filter((subject) => sSubjects.includes(subject));
+      if (chosenSubjects.length === 0) {
+        setSMsg(`Please choose at least one subject for ${sGrade}.`);
+        return;
+      }
       setSMsg('Creating...');
-      const subjectsForGrade = getStudentSubjectsForGrade(sGrade);
-      const flatStudentSubjects = subjectsForGrade.map((subject) => `${sGrade}: ${subject}`);
+      const flatStudentSubjects = chosenSubjects.map((subject) => `${sGrade}: ${subject}`);
 
       const res = await fetch('https://ace-academy-backend-e0pi.onrender.com/api/admin/create-user', {
         method: 'POST',
@@ -280,7 +293,6 @@ export default function AdminDashboard() {
   };
 
   const teacherGradesWithManualSubjects = tGrades.filter((grade) => !isAllSubjectsGrade(grade));
-  const autoStudentSubjectsLabel = formatSubjectAssignments(getStudentSubjectsForGrade(sGrade)).join(', ');
 
   return (
     <div className="dashboard-container">
@@ -366,7 +378,7 @@ export default function AdminDashboard() {
                           <span style={{ fontWeight: 'bold', width: '100px', color: 'var(--primary)' }}>{grade}</span>
                           {availableSubjects.map((subject) => (
                             <label key={subject} className="checkbox-label">
-                              <input type="checkbox" checked={currentSelected.includes(subject)} onChange={() => toggleTeacherSubject(grade, subject)} /> {subject}
+                              <input type="checkbox" checked={currentSelected.includes(subject)} onChange={() => toggleTeacherSubject(grade, subject)} /> {subjectLabel(subject)}
                             </label>
                           ))}
                         </div>
@@ -401,8 +413,25 @@ export default function AdminDashboard() {
 
               {sGrade && (
                 <div className="dynamic-box">
-                  <p style={{ fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-dark)', marginBottom: '10px' }}>Subjects will be assigned automatically for {sGrade}:</p>
-                  <p style={{ margin: 0, color: 'var(--text-dark)', fontWeight: '600' }}>{autoStudentSubjectsLabel || 'No subjects available'}</p>
+                  {isAllSubjectsGrade(sGrade) ? (
+                    <>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-dark)', marginBottom: '6px' }}>Subjects for {sGrade}:</p>
+                      <p style={{ margin: 0, color: 'var(--text-dark)', fontWeight: '600' }}>All Subjects (assigned automatically for Grades 3–8)</p>
+                    </>
+                  ) : (
+                    <>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-dark)', marginBottom: '6px' }}>Subjects the student is enrolling in for {sGrade}:</p>
+                      <div className="checkbox-group">
+                        {getStudentSubjectsForGrade(sGrade).map((subject) => (
+                          <label key={subject} className="checkbox-label">
+                            <input type="checkbox" checked={sSubjects.includes(subject)} onChange={() => toggleStudentSubject(subject)} />
+                            {subjectLabel(subject)}
+                          </label>
+                        ))}
+                      </div>
+                      {sSubjects.length === 0 && <p style={{ margin: '10px 0 0', color: 'var(--danger)', fontWeight: '600', fontSize: '0.9rem' }}>Choose at least one subject.</p>}
+                    </>
+                  )}
                 </div>
               )}
 
@@ -468,7 +497,7 @@ export default function AdminDashboard() {
                           <div key={index} className="system-message">{msg.message} | {msg.time} ({msg.date})</div>
                         ) : (
                           <div key={index} className={`chat-bubble ${msg.author === adminName ? 'sent' : 'received'}`}>
-                            <div className="chat-meta">{msg.author}</div>
+                            <div className="chat-meta">{displayName(msg.author)}</div>
                             <div className="chat-text">{msg.message}</div>
                             <div className="chat-time-date">{msg.time} | {msg.date}</div>
                           </div>

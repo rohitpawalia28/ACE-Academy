@@ -11,17 +11,33 @@ router.get('/profile/:username', async (req, res) => {
     } catch (error) { res.status(500).json({ message: 'Error fetching profile' }); }
 });
 
+// Subjects stored as "Grade 10: Math". Returns the subject names for one grade.
+const subjectsForGrade = (list, grade) =>
+    (list || []).filter((s) => s.startsWith(grade + ': ')).map((s) => s.slice(grade.length + 2));
+
+// A teacher teaches a student if they share the grade and at least one subject.
+// Missing subject data, or "All Subjects" (Grades 3-8), counts as a match.
+const teachesStudent = (teacher, student) => {
+    if (!student.grade || !(teacher.assignedGrades || []).includes(student.grade)) return false;
+    const tSubs = subjectsForGrade(teacher.assignedSubjects, student.grade);
+    const sSubs = subjectsForGrade(student.assignedSubjects, student.grade);
+    if (tSubs.length === 0 || sSubs.length === 0) return true;
+    if (tSubs.includes('All Subjects') || sSubs.includes('All Subjects')) return true;
+    return sSubs.some((sub) => tSubs.includes(sub));
+};
+
 router.get('/students', async (req, res) => {
     try {
         const { teacher } = req.query;
         if (teacher) {
             const teacherObj = await User.findOne({ username: teacher });
             if (teacherObj && teacherObj.assignedGrades) {
-                const students = await User.find({ role: 'student', grade: { $in: teacherObj.assignedGrades } }).select('username name grade');
-                return res.json(students);
+                const students = await User.find({ role: 'student', grade: { $in: teacherObj.assignedGrades } })
+                    .select('username name grade assignedSubjects');
+                return res.json(students.filter((s) => teachesStudent(teacherObj, s)));
             }
         }
-        const students = await User.find({ role: 'student' }).select('username name grade');
+        const students = await User.find({ role: 'student' }).select('username name grade assignedSubjects');
         res.json(students);
     } catch (error) { res.status(500).json({ message: 'Failed to fetch students' }); }
 });
@@ -32,8 +48,11 @@ router.get('/teachers', async (req, res) => {
         if (student) {
             const studentObj = await User.findOne({ username: student });
             if (studentObj && studentObj.grade) {
-                const teachers = await User.find({ role: 'teacher', assignedGrades: studentObj.grade }).select('username name');
-                return res.json(teachers);
+                const teachers = await User.find({ role: 'teacher', assignedGrades: studentObj.grade })
+                    .select('username name assignedGrades assignedSubjects');
+                return res.json(teachers
+                    .filter((t) => teachesStudent(t, studentObj))
+                    .map((t) => ({ _id: t._id, username: t.username, name: t.name })));
             }
         }
         const teachers = await User.find({ role: 'teacher' }).select('username name');
