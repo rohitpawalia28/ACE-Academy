@@ -129,7 +129,7 @@ export default function ClassProgress({ students = [], grades = [] }) {
       `Class ${grade}`,
       headers,
       data,
-      [6, 24, 16, 8, 13, 16, 13, 12, 15, 11, 16, 28, 13, 16, 16]
+      [6, 24, 16, 10, 13, 16, 13, 12, 15, 11, 16, 30, 13, 20, 16]
     );
   };
 
