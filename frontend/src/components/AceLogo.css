@@ -1,0 +1,35 @@
+.ace-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.ace-mark {
+  flex: none;
+  overflow: visible;
+  transition: transform .45s var(--ease-spring);
+}
+.ace-logo:hover .ace-mark { transform: rotate(10deg) scale(1.06); }
+
+.ace-logo-words { display: flex; flex-direction: column; line-height: 1; }
+
+.ace-logo-main {
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: -.02em;
+  font-variation-settings: "wdth" 90;
+}
+.ace-logo-main b { font-weight: 800; }
+
+.ace-logo-sub {
+  margin-top: 4px;
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .01em;
+  opacity: .7;
+}
+
+.ace-logo.tone-ink { color: var(--ink); }
+.ace-logo.tone-paper { color: #fff; }
+.ace-logo.tone-paper .ace-logo-main b { color: var(--yellow); }

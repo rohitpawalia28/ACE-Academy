@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { AceMark } from '../components/AceLogo';
 import './Login.css';
 
 const Login = () => {
@@ -64,13 +67,29 @@ const Login = () => {
     }
   };
 
+  const portalName = role.charAt(0).toUpperCase() + role.slice(1);
+
   return (
     <div className="login-container">
+      <aside className="login-side">
+        <Link to="/" className="login-back">
+          <ArrowLeft size={16} /> Home
+        </Link>
+        <div className="login-side-cards" aria-hidden="true">
+          <div className="side-card side-card-back" />
+          <div className="side-card side-card-front"><AceMark size={220} /></div>
+        </div>
+        <p className="login-side-title" aria-hidden="true">{portalName}<br />Portal</p>
+      </aside>
+
       <div className="login-box">
+        <Link to="/" className="login-back login-back-mobile">
+          <ArrowLeft size={16} /> Home
+        </Link>
         <div className="login-header">
-          <img src="/ace-logo.png" alt="ACE Logo" className="login-logo" />
+          <AceMark size={46} className="login-logo" />
           <h2>ACE INSTITUTE</h2>
-          <p>{role.charAt(0).toUpperCase() + role.slice(1)} Portal</p>
+          <p>{portalName} Portal</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}

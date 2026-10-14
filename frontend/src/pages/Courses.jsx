@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles, BadgePercent, BookOpenCheck } from "lucide-react";
+import AceLogo from "../components/AceLogo";
 import "./Courses.css";
 
 const enrollmentMessage =
@@ -74,7 +75,7 @@ export default function Courses() {
           <ArrowLeft size={16} />
           <span>Back to Home</span>
         </Link>
-        <div className="courses-brand">ACE INSTITUTE</div>
+        <Link to="/" className="courses-brand"><AceLogo size={30} showSub={false} /></Link>
       </header>
 
       <main className="courses-main">
@@ -101,8 +102,8 @@ export default function Courses() {
           initial="hidden"
           animate="visible"
         >
-          {courses.map((course) => (
-            <motion.article key={course.title} className="course-card" variants={cardVariants}>
+          {courses.map((course, i) => (
+            <motion.article key={course.title} className={`course-card tone-${i % 4}`} variants={cardVariants}>
               <div className="course-card-top">
                 <h2>{course.title}</h2>
                 <div className="discount-badge">

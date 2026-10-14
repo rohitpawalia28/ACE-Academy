@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ChevronDown,
   GraduationCap,
@@ -20,48 +21,66 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
+import AceLogo from "../components/AceLogo";
 import "./Home.css";
 
 const features = [
   {
-    icon: <BookOpen className="feature-icon ace-yellow" />,
+    icon: <BookOpen className="feature-icon" />,
+    tone: "yellow",
     title: "Strong Concept Building",
     description:
       "We focus on the 'why' before the 'how', ensuring students master the fundamentals of every subject.",
   },
   {
-    icon: <Video className="feature-icon ace-red" />,
+    icon: <Video className="feature-icon" />,
+    tone: "red",
     title: "Free Revision Videos",
     description:
       "Access our library of high-quality revision videos anytime to reinforce your learning at your own pace.",
   },
   {
-    icon: <ShieldCheck className="feature-icon blue" />,
+    icon: <ShieldCheck className="feature-icon" />,
+    tone: "sky",
     title: "Exam Oriented Notes",
     description:
       "Curated notes designed specifically to help students excel in board and competitive examinations.",
   },
   {
-    icon: <Zap className="feature-icon amber" />,
+    icon: <Zap className="feature-icon" />,
+    tone: "lilac",
     title: "Regular Assessments",
     description:
       "Weekly tests and mock exams to track progress and identify areas for improvement.",
   },
   {
-    icon: <Users className="feature-icon green" />,
+    icon: <Users className="feature-icon" />,
+    tone: "mint",
     title: "Doubt Solving Sessions",
     description:
       "One-on-one sessions with expert faculty to clear all academic hurdles.",
   },
   {
-    icon: <CheckCircle className="feature-icon purple" />,
+    icon: <CheckCircle className="feature-icon" />,
+    tone: "yellow",
     title: "Personalized Attention",
     description:
       "Small batch sizes ensure every student gets the focus they deserve from our educators.",
   },
 ];
 
+const ticker = [
+  "3rd - 8th All Subjects",
+  "9th - 10th Maths & Science",
+  "11th - 12th Accounts & Economics",
+  "Admissions Open for 2026-27",
+  "Doubt Solving Sessions",
+  "Exam Oriented Notes",
+];
+
 export default function Home() {
+  const reduceMotion = useReducedMotion();
+
   useEffect(() => {
     const anchors = document.querySelectorAll('a[href^="#"]');
     const onClick = (e) => {
@@ -75,12 +94,21 @@ export default function Home() {
     return () => anchors.forEach((a) => a.removeEventListener("click", onClick));
   }, []);
 
+  // The two hero cards are "dealt" onto the table on load.
+  const deal = (i) =>
+    reduceMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 160, rotate: i === 0 ? -24 : 24, scale: 0.85 },
+          animate: { opacity: 1, y: 0, rotate: i === 0 ? -3 : 2.5, scale: 1 },
+          transition: { type: "spring", stiffness: 120, damping: 15, delay: 0.75 + i * 0.15 },
+        };
+
   return (
     <div className="home-page">
       <nav className="top-nav">
-        <Link to="/" className="brand">
-          <span className="brand-main">ACE INSTITUTE</span>
-          <span className="brand-sub">Achievers' Centre of Education</span>
+        <Link to="/" className="brand" aria-label="ACE Institute home">
+          <AceLogo size={34} />
         </Link>
 
         <div className="menu desktop-only">
@@ -132,69 +160,83 @@ export default function Home() {
       </nav>
 
       <section className="hero">
-        <video className="hero-video" autoPlay loop muted playsInline preload="auto">
-          <source src="/background.mp4" type="video/mp4" />
-        </video>
-        <div className="hero-content">
-          <div className="hero-badge">Admissions Open for 2026-27</div>
+        <div className="hero-copy">
+          <motion.div
+            className="hero-badge"
+            initial={reduceMotion ? false : { scale: 0, rotate: -40 }}
+            animate={{ scale: 1, rotate: -4 }}
+            transition={{ type: "spring", stiffness: 260, damping: 14, delay: 0.55 }}
+          >
+            Admissions Open for 2026-27
+          </motion.div>
           <h1>
-            Welcome to <span>Excellence</span>
+            Welcome to <span className="hero-word">Excellence</span>
           </h1>
           <p>
             Empowering Students for a Brighter Future through strong concept building,
             regular assessments, and dedicated mentorship.
           </p>
-
-          <div className="hero-cards">
-            <div className="hero-card">
-              <Clock className="card-watermark ace-yellow" />
-              <div className="card-topline ace-yellow-line">Active Now</div>
-              <h3>Ongoing Courses</h3>
-              <div className="hero-course-list">
-                <div className="hero-course-item">3rd - 8th All Subjects</div>
-                <div className="hero-course-item">9th - 10th Maths & Science</div>
-                <div className="hero-course-item">11th - 12th Accounts & Economics</div>
-              </div>
-              <ul className="hero-points">
-                <li>Strong Concept Building</li>
-                <li>Exam Oriented Notes</li>
-                <li>Regular Assessments</li>
-                <li>Doubt Solving Sessions</li>
-                <li>Personalized Attention</li>
-              </ul>
-            </div>
-
-            <div className="hero-card">
-              <Star className="card-watermark ace-red" />
-              <div className="card-topline ace-red-line">Launching Soon</div>
-              <h3>New Courses Coming Soon</h3>
-              <p className="launch-copy">
-                Upcoming batches will open shortly with structured learning plans
-                and personal counselling support for every student.
-              </p>
-              <ul className="hero-points">
-                <li>New session batches for all levels</li>
-                <li>Early guidance before batch selection</li>
-                <li>Small batch size and focused mentoring</li>
-              </ul>
-              <div className="launch-tags">
-                <span>Admissions Opening Soon</span>
-                <span>Counselling Open</span>
-              </div>
-            </div>
-          </div>
-
-          <Link to="/courses" className="explore-more" style={{ textDecoration: "none" }}>
-            <small>Explore More Courses....</small>
-            <ArrowRight size={18} />
-          </Link>
         </div>
+
+        <div className="hero-cards">
+          <motion.div className="hero-card card-yellow" {...deal(0)}>
+            <span className="card-index" aria-hidden="true">A<br />♠</span>
+            <Clock className="card-watermark" />
+            <div className="card-topline">Active Now</div>
+            <h3>Ongoing Courses</h3>
+            <div className="hero-course-list">
+              <div className="hero-course-item">3rd - 8th All Subjects</div>
+              <div className="hero-course-item">9th - 10th Maths & Science</div>
+              <div className="hero-course-item">11th - 12th Accounts & Economics</div>
+            </div>
+            <ul className="hero-points">
+              <li>Strong Concept Building</li>
+              <li>Exam Oriented Notes</li>
+              <li>Regular Assessments</li>
+              <li>Doubt Solving Sessions</li>
+              <li>Personalized Attention</li>
+            </ul>
+          </motion.div>
+
+          <motion.div className="hero-card card-red" {...deal(1)}>
+            <span className="card-index" aria-hidden="true">A<br />♥</span>
+            <Star className="card-watermark" />
+            <div className="card-topline">Launching Soon</div>
+            <h3>New Courses Coming Soon</h3>
+            <p className="launch-copy">
+              Upcoming batches will open shortly with structured learning plans
+              and personal counselling support for every student.
+            </p>
+            <ul className="hero-points">
+              <li>New session batches for all levels</li>
+              <li>Early guidance before batch selection</li>
+              <li>Small batch size and focused mentoring</li>
+            </ul>
+            <div className="launch-tags">
+              <span>Admissions Opening Soon</span>
+              <span>Counselling Open</span>
+            </div>
+          </motion.div>
+        </div>
+
+        <Link to="/courses" className="explore-more">
+          Explore More Courses
+          <ArrowRight size={18} />
+        </Link>
       </section>
+
+      <div className="ticker" aria-hidden="true">
+        <div className="ticker-track">
+          {[...ticker, ...ticker].map((t, i) => (
+            <span key={i}>{t}<i>✦</i></span>
+          ))}
+        </div>
+      </div>
 
       <section className="why-section">
         <div className="section-head">
           <h2>
-            Why <span>Gen-Z & Alpha</span> Students Choose ACE INSTITUTE?
+            Why Gen-Z & Alpha Students Choose ACE INSTITUTE?
           </h2>
           <p>
             We combine traditional teaching excellence with modern learning methods
@@ -203,12 +245,19 @@ export default function Home() {
         </div>
 
         <div className="features-grid">
-          {features.map((f) => (
-            <div key={f.title} className="feature-card">
+          {features.map((f, i) => (
+            <motion.div
+              key={f.title}
+              className={`feature-card tone-${f.tone}`}
+              initial={reduceMotion ? false : { opacity: 0, y: 40, rotate: i % 2 ? 3 : -3 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ type: "spring", stiffness: 140, damping: 16, delay: (i % 3) * 0.08 }}
+            >
               <div className="feature-icon-wrap">{f.icon}</div>
               <h3>{f.title}</h3>
               <p>{f.description}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -216,12 +265,8 @@ export default function Home() {
       <section id="director" className="director-section">
         <div className="director-image-col">
           <div className="director-stack">
-            <div className="bg-yellow" />
-            <div className="bg-red" />
-            <img
-              src="/owner.jpg"
-              alt="Muskan Kalra - Director"
-            />
+            <div className="photo-card-back" />
+            <img src="/owner.jpg" alt="Muskan Kalra - Director" />
             <div className="verified-badge">
               <div><Award size={20} /></div>
               <div>
@@ -246,14 +291,14 @@ export default function Home() {
           </p>
           <div className="director-points">
             <div>
-              <BookCheck size={20} />
+              <BookCheck size={22} />
               <div>
                 <h4>Concept Building</h4>
                 <p>Deep conceptual clarity for all subjects.</p>
               </div>
             </div>
             <div>
-              <MessageCircle size={20} />
+              <MessageCircle size={22} />
               <div>
                 <h4>Doubt Solving</h4>
                 <p>Dedicated sessions for every query.</p>
@@ -266,8 +311,7 @@ export default function Home() {
       <footer className="footer">
         <div className="footer-grid">
           <div className="footer-brand">
-            <h3>ACE INSTITUTE</h3>
-            <small>Achievers' Centre of Education</small>
+            <AceLogo size={44} tone="paper" />
             <p>
               Leading the way in quality education with a focus on concept building,
               personalized attention, and academic excellence.

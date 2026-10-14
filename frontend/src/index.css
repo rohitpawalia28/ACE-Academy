@@ -1,0 +1,87 @@
+/* ==========================================================
+   ACE — global design tokens
+   Concept: "ACE" = the ace card. Sticker-style, thick ink
+   outlines, hard offset shadows, bright brand colours.
+   ========================================================== */
+:root {
+  --paper: #f4f0ff;      /* lilac haze page background */
+  --paper-2: #ebe4ff;
+  --card: #ffffff;
+  --ink: #1c1433;        /* deep plum ink — text, outlines, shadows */
+  --ink-soft: #5b5277;
+  --ink-faint: #8f88a8;
+  --yellow: #ffd60a;     /* ACE yellow */
+  --red: #ff2e4c;        /* cherry red */
+  --red-deep: #d90f2e;
+  --mint: #2ee6a6;
+  --mint-deep: #0c9b6a;
+  --lilac: #b8a4ff;
+  --sky: #7cc8ff;
+
+  --line: 2.5px solid var(--ink);
+  --pop: 5px 5px 0 var(--ink);
+  --pop-sm: 3px 3px 0 var(--ink);
+  --pop-lg: 8px 8px 0 var(--ink);
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+
+  --font: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+
+  /* legacy names still referenced by inline styles in the dashboards */
+  --primary: var(--ink);
+  --text-dark: var(--ink);
+  --text-muted: var(--ink-soft);
+  --success: var(--mint-deep);
+  --danger: var(--red-deep);
+  --warning: #e0a800;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root { margin: 0; padding: 0; min-height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+::selection { background: var(--yellow); color: var(--ink); }
+
+:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+
+/* ---------- Page transition (card-flip wipe) ---------- */
+.page-shell { min-height: 100vh; }
+
+.deal-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: var(--yellow);
+  display: grid;
+  place-items: center;
+  border-left: 6px solid var(--ink);
+  border-right: 6px solid var(--ink);
+}
+.deal-curtain.is-ink { background: var(--ink); }
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

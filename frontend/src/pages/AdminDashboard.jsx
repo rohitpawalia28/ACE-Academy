@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import './AdminDashboard.css';
+import { Files, GraduationCap, Home, Menu, MessageCircle, UserPlus } from 'lucide-react';
+import AceLogo from '../components/AceLogo';
+import '../styles/dashboard.css';
 
 const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
 
@@ -283,20 +285,20 @@ export default function AdminDashboard() {
   return (
     <div className="dashboard-container">
       <div className="mobile-header">
-        <div className="mobile-logo-text"><span className="logo-text">ACE</span> Admin</div>
-        <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>Menu</button>
+        <div className="mobile-logo-text"><AceLogo size={26} tone="paper" showSub={false} /><span className="role-tag">Admin</span></div>
+        <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Open menu"><Menu size={22} /></button>
       </div>
 
       {isMobileMenuOpen && <div className="mobile-overlay" onClick={() => setIsMobileMenuOpen(false)} />}
 
       <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div className="sidebar-logo"><span className="logo-text">ACE</span> Admin</div>
+        <div className="sidebar-logo"><AceLogo size={34} tone="paper" showSub={false} /><span className="role-tag">Admin</span></div>
         <nav className="sidebar-nav">
-          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleNav('dashboard')}><span className="nav-icon">Home</span> Admin Portal</button>
-          <button className={`nav-item ${activeTab === 'addTeacher' ? 'active' : ''}`} onClick={() => handleNav('addTeacher')}><span className="nav-icon">Add</span> Add Teacher</button>
-          <button className={`nav-item ${activeTab === 'addStudent' ? 'active' : ''}`} onClick={() => handleNav('addStudent')}><span className="nav-icon">Add</span> Add Student</button>
-          <button className={`nav-item ${activeTab === 'manageNotes' ? 'active' : ''}`} onClick={() => handleNav('manageNotes')}><span className="nav-icon">Docs</span> Manage Content</button>
-          <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon">Chat</span> Universal Chat</button>
+          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleNav('dashboard')}><span className="nav-icon"><Home size={18} strokeWidth={2.4} /></span> Admin Portal</button>
+          <button className={`nav-item ${activeTab === 'addTeacher' ? 'active' : ''}`} onClick={() => handleNav('addTeacher')}><span className="nav-icon"><UserPlus size={18} strokeWidth={2.4} /></span> Add Teacher</button>
+          <button className={`nav-item ${activeTab === 'addStudent' ? 'active' : ''}`} onClick={() => handleNav('addStudent')}><span className="nav-icon"><GraduationCap size={18} strokeWidth={2.4} /></span> Add Student</button>
+          <button className={`nav-item ${activeTab === 'manageNotes' ? 'active' : ''}`} onClick={() => handleNav('manageNotes')}><span className="nav-icon"><Files size={18} strokeWidth={2.4} /></span> Manage Content</button>
+          <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon"><MessageCircle size={18} strokeWidth={2.4} /></span> Universal Chat</button>
         </nav>
         <button className="logout-btn" onClick={handleLogout}>System Logout</button>
       </aside>
@@ -307,7 +309,7 @@ export default function AdminDashboard() {
             <h1>Administration Center</h1>
             <p className="date-display">System Status: Secure & Online</p>
           </div>
-          <div className="user-profile-badge"><div className="avatar" style={{ backgroundColor: '#e74c3c' }}>A</div><span>{adminName}</span></div>
+          <div className="user-profile-badge"><div className="avatar">A</div><span>{adminName}</span></div>
         </header>
 
         {activeTab === 'dashboard' && (
@@ -417,7 +419,7 @@ export default function AdminDashboard() {
               {allNotes.length === 0 ? <p className="empty-state">System storage is currently empty.</p> : null}
               {allNotes.map((note) => (
                 <div key={note._id} className="modern-card">
-                  <div className="card-icon" style={{ backgroundColor: '#fee2e2', color: '#ef4444' }}>Doc</div>
+                  <div className="card-icon" style={{ backgroundColor: '#fee2e2', color: '#ff2e4c' }}>Doc</div>
                   <div className="card-details" style={{ flex: 1 }}>
                     <h4>{note.title} <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>({note.batch})</span></h4>
                     <p>Uploaded by User ID: <strong>{note.uploadedBy}</strong></p>
@@ -437,7 +439,7 @@ export default function AdminDashboard() {
                 <div className="contact-list">
                   {chatContacts.map((contact) => (
                     <div key={contact.id} className={`chat-contact ${chatRoom === contact.room ? 'active' : ''}`} onClick={() => selectChat(contact)}>
-                      <div className="contact-avatar-circle" style={{ backgroundColor: contact.type === 'teacher' ? '#4F46E5' : '#10b981' }}>
+                      <div className="contact-avatar-circle" style={{ backgroundColor: contact.type === 'teacher' ? '#b8a4ff' : '#2ee6a6' }}>
                         {contact.initial}
                       </div>
                       <div className="contact-info">
@@ -454,7 +456,7 @@ export default function AdminDashboard() {
                 {selectedChatObj ? (
                   <>
                     <div className="chat-active-header">
-                      <div className="contact-avatar-circle" style={{ width: '35px', height: '35px', marginRight: '10px', fontSize: '1rem', backgroundColor: selectedChatObj.type === 'teacher' ? '#4F46E5' : '#10b981' }}>
+                      <div className="contact-avatar-circle" style={{ width: '35px', height: '35px', marginRight: '10px', fontSize: '1rem', backgroundColor: selectedChatObj.type === 'teacher' ? '#b8a4ff' : '#2ee6a6' }}>
                         {selectedChatObj.initial}
                       </div>
                       {selectedChatObj.name}

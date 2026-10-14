@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import './TeacherDashboard.css';
+import { BarChart3, CalendarDays, FileUp, Home, ListChecks, Menu, MessageCircle, PenLine } from 'lucide-react';
+import AceLogo, { AceMark } from '../components/AceLogo';
+import '../styles/dashboard.css';
 
 const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
 
@@ -155,35 +157,41 @@ const TeacherDashboard = () => {
   const deleteNote = async (id) => { if (window.confirm("Delete note?")) { await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/notes/${id}`, { method: 'DELETE' }); fetchData(username); } };
   const deleteSchedule = async (id) => { if (window.confirm("Delete schedule?")) { await fetch(`https://ace-academy-backend-e0pi.onrender.com/api/timetable/${id}`, { method: 'DELETE' }); fetchData(username); } };
 
-  if (!profile) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#4F46E5', fontSize: '1.5rem', fontWeight: 'bold' }}>Loading Teacher Portal...</div>;
+  if (!profile) return (
+      <div className="dash-loading">
+        <div className="dash-loading-card">
+          <AceMark size={64} className="dash-loading-mark" />
+          <h3>Loading Teacher Portal...</h3>
+          <div className="dash-spinner" />
+        </div>
+      </div>
+    );
 
   return (
     <div className="dashboard-container">
       {/* --- NEW MOBILE HEADER --- */}
       <div className="mobile-header">
-        <div className="mobile-logo-text"><span className="logo-text">ACE</span> INSTITUTE</div>
-        <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</button>
+        <div className="mobile-logo-text"><AceLogo size={26} tone="paper" showSub={false} /><span className="role-tag">Teacher</span></div>
+        <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Open menu"><Menu size={22} /></button>
       </div>
 
       {isMobileMenuOpen && <div className="mobile-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>}
 
       <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div className="sidebar-logo">
-          <img src="/logo.png" alt="ACE Logo" className="sidebar-logo-img" />
-        </div>
+        <div className="sidebar-logo"><AceLogo size={34} tone="paper" showSub={false} /><span className="role-tag">Teacher</span></div>
         <nav className="sidebar-nav">
-          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleNav('dashboard')}><span className="nav-icon">🏠</span> Teacher Portal</button>
-          <button className={`nav-item ${activeTab === 'timetable' ? 'active' : ''}`} onClick={() => handleNav('timetable')}><span className="nav-icon">📅</span> Update Timetable</button>
-          <button className={`nav-item ${activeTab === 'notes' ? 'active' : ''}`} onClick={() => handleNav('notes')}><span className="nav-icon">📁</span> Upload Notes</button>
-          <button className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => handleNav('attendance')}><span className="nav-icon">✅</span> Daily Attendance</button>
-          <button className={`nav-item ${activeTab === 'marks' ? 'active' : ''}`} onClick={() => handleNav('marks')}><span className="nav-icon">📝</span> Exam Marks</button>
-          <button className={`nav-item ${activeTab === 'progress' ? 'active' : ''}`} onClick={() => handleNav('progress')}><span className="nav-icon">📊</span> Student Progress</button>
-          <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon">💬</span> Live Chat</button>
+          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleNav('dashboard')}><span className="nav-icon"><Home size={18} strokeWidth={2.4} /></span> Teacher Portal</button>
+          <button className={`nav-item ${activeTab === 'timetable' ? 'active' : ''}`} onClick={() => handleNav('timetable')}><span className="nav-icon"><CalendarDays size={18} strokeWidth={2.4} /></span> Update Timetable</button>
+          <button className={`nav-item ${activeTab === 'notes' ? 'active' : ''}`} onClick={() => handleNav('notes')}><span className="nav-icon"><FileUp size={18} strokeWidth={2.4} /></span> Upload Notes</button>
+          <button className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => handleNav('attendance')}><span className="nav-icon"><ListChecks size={18} strokeWidth={2.4} /></span> Daily Attendance</button>
+          <button className={`nav-item ${activeTab === 'marks' ? 'active' : ''}`} onClick={() => handleNav('marks')}><span className="nav-icon"><PenLine size={18} strokeWidth={2.4} /></span> Exam Marks</button>
+          <button className={`nav-item ${activeTab === 'progress' ? 'active' : ''}`} onClick={() => handleNav('progress')}><span className="nav-icon"><BarChart3 size={18} strokeWidth={2.4} /></span> Student Progress</button>
+          <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon"><MessageCircle size={18} strokeWidth={2.4} /></span> Live Chat</button>
         </nav>
       </aside>
 
       <main className="main-content">
-        <header className="dashboard-header"><div><h1>Faculty Dashboard</h1><p className="date-display">{new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p></div><div className="profile-menu-wrap"><button className="user-profile-badge" style={{ border: 'none', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); setIsProfileMenuOpen((prev) => !prev); }}><div className="avatar">{profile.name ? profile.name.charAt(0).toUpperCase() : 'T'}</div><span>{profile.name || username}</span></button>{isProfileMenuOpen && (<div className="profile-menu-popover"><button className="modern-btn btn-primary" style={{ width: '100%', marginBottom: '8px' }} onClick={openChangePasswordModal}>Change Password</button><button className="modern-btn btn-danger" style={{ width: '100%' }} onClick={handleLogout}>Secure Logout</button></div>)}</div></header>
+        <header className="dashboard-header"><div><h1>Faculty Dashboard</h1><p className="date-display">{new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p></div><div className="profile-menu-wrap"><button className="user-profile-badge" onClick={(e) => { e.stopPropagation(); setIsProfileMenuOpen((prev) => !prev); }}><div className="avatar">{profile.name ? profile.name.charAt(0).toUpperCase() : 'T'}</div><span>{profile.name || username}</span></button>{isProfileMenuOpen && (<div className="profile-menu-popover"><button className="modern-btn btn-primary" onClick={openChangePasswordModal}>Change Password</button><button className="modern-btn btn-danger" onClick={handleLogout}>Secure Logout</button></div>)}</div></header>
 
         {activeTab === 'dashboard' && (<div className="welcome-banner"><div className="banner-content"><h2>Welcome, <span className="highlight-name">{profile.name || username}</span></h2><p className="banner-subtitle">Here is an overview of your teaching assignments.</p><div className="profile-grid"><div className="profile-card"><span className="label">Assigned Classes</span><span className="value">{profile.assignedGrades?.join(', ') || 'None'}</span></div><div className="profile-card"><span className="label">Assigned Subjects</span><span className="value" style={{fontSize: '0.9rem'}}>{profile.assignedSubjects?.join(', ') || 'None'}</span></div></div></div></div>)}
         {activeTab === 'timetable' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '800px' }}><h3 className="widget-title">Update Timetable</h3><form className="quick-form" onSubmit={handleTimetableSubmit}><div className="form-row"><input type="date" className="modern-input" value={timeDate} onChange={(e) => setTimeDate(e.target.value)} required /><select className="modern-select" value={timeBatch} onChange={(e) => { setTimeBatch(e.target.value); setTimeSubject(''); }} required><option value="">Select Grade</option>{profile.assignedGrades.map(g => <option key={g} value={g}>{g}</option>)}</select><select className="modern-select" value={timeSubject} onChange={(e) => setTimeSubject(e.target.value)} required disabled={!timeBatch}><option value="">Select Subject</option>{getAllowedSubjects(timeBatch).map(s => <option key={s} value={s}>{s}</option>)}</select></div><input type="text" className="modern-input" placeholder="Topic to be covered..." value={timeTopic} onChange={(e) => setTimeTopic(e.target.value)} required /><button type="submit" className="modern-btn btn-primary">Publish Schedule</button></form>{timeStatus && <p style={{color: 'green', marginTop: '10px'}}>{timeStatus}</p>}<h3 className="widget-title" style={{marginTop: '30px', borderTop: '1px solid #eee', paddingTop: '20px'}}>Recently Published</h3><div className="grid-list">{allSchedules.filter(s => profile.assignedGrades.includes(s.batch)).map(s => (<div key={s._id} className="modern-card"><div className="card-details"><h4>{s.subject} <span style={{color: '#888', fontSize: '0.85rem'}}>({s.batch})</span></h4><p>{s.topic} • {new Date(s.date).toLocaleDateString('en-GB')}</p></div><button onClick={()=>deleteSchedule(s._id)} className="modern-btn btn-danger">Delete</button></div>))}</div></div>)}
@@ -201,7 +209,7 @@ const TeacherDashboard = () => {
                 <div className="contact-list">
                   {chatContacts.map(contact => (
                     <div key={contact.id} className={`chat-contact ${chatRoom === contact.room ? 'active' : ''}`} onClick={() => selectChat(contact)}>
-                      <div className="contact-avatar-circle" style={{ backgroundColor: contact.type === 'group' ? '#f59e0b' : contact.type === 'admin' ? '#ef4444' : '#4F46E5' }}>{contact.initial}</div>
+                      <div className="contact-avatar-circle" style={{ backgroundColor: contact.type === 'group' ? '#ffd60a' : contact.type === 'admin' ? '#ff2e4c' : '#b8a4ff' }}>{contact.initial}</div>
                       <div className="contact-info"><span className="contact-name">{contact.name}</span><span className="contact-type">{contact.type}</span></div>
                       {unreadRooms[contact.room] && <div className="unread-dot"></div>}
                     </div>
@@ -212,7 +220,7 @@ const TeacherDashboard = () => {
                 {selectedChatObj ? (
                   <>
                     <div className="chat-active-header">
-                      <div className="contact-avatar-circle" style={{ width: '35px', height: '35px', marginRight: '10px', fontSize: '1rem', backgroundColor: selectedChatObj.type === 'group' ? '#f59e0b' : selectedChatObj.type === 'admin' ? '#ef4444' : '#4F46E5' }}>{selectedChatObj.initial}</div>
+                      <div className="contact-avatar-circle" style={{ width: '35px', height: '35px', marginRight: '10px', fontSize: '1rem', backgroundColor: selectedChatObj.type === 'group' ? '#ffd60a' : selectedChatObj.type === 'admin' ? '#ff2e4c' : '#b8a4ff' }}>{selectedChatObj.initial}</div>
                       {selectedChatObj.name}
                     </div>
                     <div className="chat-messages">
@@ -242,38 +250,17 @@ const TeacherDashboard = () => {
           </div>
         )}
         {isChangePasswordOpen && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(15, 23, 42, 0.45)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 3000,
-              padding: '16px',
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '440px',
-                background: '#fff',
-                borderRadius: '16px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 20px 45px rgba(15, 23, 42, 0.2)',
-                padding: '20px',
-              }}
-            >
-              <h3 style={{ margin: '0 0 14px 0', color: '#1e293b' }}>Change Password</h3>
+          <div className="modal-backdrop">
+            <div className="modal-card" role="dialog" aria-modal="true" aria-label="Change Password">
+              <h3 className="modal-title">Change Password</h3>
               <form className="quick-form" onSubmit={handlePasswordChangeSubmit}>
                 <input type="password" className="modern-input" placeholder="Current Password" value={passwordForm.currentPassword} onChange={(e) => handlePasswordFieldChange('currentPassword', e.target.value)} required />
                 <input type="password" className="modern-input" placeholder="New Password" value={passwordForm.newPassword} onChange={(e) => handlePasswordFieldChange('newPassword', e.target.value)} required />
                 <input type="password" className="modern-input" placeholder="Confirm New Password" value={passwordForm.confirmNewPassword} onChange={(e) => handlePasswordFieldChange('confirmNewPassword', e.target.value)} required />
-                {passwordError ? <p style={{ margin: 0, color: '#dc2626', fontWeight: 600 }}>{passwordError}</p> : null}
-                {passwordSuccess ? <p style={{ margin: 0, color: '#16a34a', fontWeight: 600 }}>{passwordSuccess}</p> : null}
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                  <button type="button" className="modern-btn" style={{ background: '#e2e8f0', color: '#1f2937' }} onClick={closeChangePasswordModal}>
+                {passwordError ? <p className="form-msg is-error">{passwordError}</p> : null}
+                {passwordSuccess ? <p className="form-msg is-success">{passwordSuccess}</p> : null}
+                <div className="modal-actions">
+                  <button type="button" className="modern-btn btn-ghost" onClick={closeChangePasswordModal}>
                     Cancel
                   </button>
                   <button type="submit" className="modern-btn btn-primary" disabled={isChangingPassword}>

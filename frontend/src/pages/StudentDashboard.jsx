@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import './StudentDashboard.css';
+import { CalendarCheck, Clock, FolderOpen, Home, Menu, MessageCircle, PenLine } from 'lucide-react';
+import AceLogo, { AceMark } from '../components/AceLogo';
+import '../styles/dashboard.css';
 
 const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
 
@@ -182,48 +184,12 @@ const StudentDashboard = () => {
 
   if (!profile) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(180deg, #fffef7 0%, #f8fafc 100%)',
-          padding: '20px',
-        }}
-      >
-        <div
-          style={{
-            textAlign: 'center',
-            border: '1px solid #e2e8f0',
-            borderRadius: '20px',
-            background: '#ffffff',
-            boxShadow: '0 16px 30px rgba(15, 23, 42, 0.08)',
-            padding: '26px 22px',
-            maxWidth: '360px',
-            width: '100%',
-          }}
-        >
-          <img
-            src="/ace-logo.png"
-            alt="ACE INSTITUTE"
-            style={{ width: '78px', height: '78px', objectFit: 'contain', marginBottom: '12px' }}
-          />
-          <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Preparing Your Dashboard</h3>
-          <p style={{ margin: '0 0 16px 0', color: '#64748b', fontWeight: 500 }}>
-            Loading classes, notes, attendance, and chat.
-          </p>
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              border: '3px solid #fde68a',
-              borderTopColor: '#c10000',
-              margin: '0 auto',
-              animation: 'dashboardSpin 0.8s linear infinite',
-            }}
-          />
+      <div className="dash-loading">
+        <div className="dash-loading-card">
+          <AceMark size={64} className="dash-loading-mark" />
+          <h3>Preparing Your Dashboard</h3>
+          <p>Loading classes, notes, attendance, and chat.</p>
+          <div className="dash-spinner" />
         </div>
       </div>
     );
@@ -238,26 +204,21 @@ const StudentDashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="mobile-header">
-        <div className="mobile-logo-text"><span className="logo-text">ACE</span> INSTITUTE</div>
-        <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</button>
+        <div className="mobile-logo-text"><AceLogo size={26} tone="paper" showSub={false} /><span className="role-tag">Student</span></div>
+        <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Open menu"><Menu size={22} /></button>
       </div>
 
       {isMobileMenuOpen && <div className="mobile-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>}
 
       <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div className="sidebar-logo">
-          <img src="/logo.png" alt="ACE Logo" className="sidebar-logo-img" />
-          <div>
-            <span className="logo-text">ACE</span> INSTITUTE
-          </div>
-        </div>
+        <div className="sidebar-logo"><AceLogo size={34} tone="paper" showSub={false} /><span className="role-tag">Student</span></div>
         <nav className="sidebar-nav">
-          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleNav('dashboard')}><span className="nav-icon">🏠</span> Home / Profile</button>
-          <button className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => handleNav('attendance')}><span className="nav-icon">📅</span> Class Attendance</button>
-          <button className={`nav-item ${activeTab === 'timetable' ? 'active' : ''}`} onClick={() => handleNav('timetable')}><span className="nav-icon">⏰</span> My Classes</button>
-          <button className={`nav-item ${activeTab === 'notes' ? 'active' : ''}`} onClick={() => handleNav('notes')}><span className="nav-icon">📁</span> Class Notes</button>
-          <button className={`nav-item ${activeTab === 'marks' ? 'active' : ''}`} onClick={() => handleNav('marks')}><span className="nav-icon">📝</span> Exam Marks</button>
-          <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon">💬</span> Support & Chat</button>
+          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleNav('dashboard')}><span className="nav-icon"><Home size={18} strokeWidth={2.4} /></span> Home / Profile</button>
+          <button className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => handleNav('attendance')}><span className="nav-icon"><CalendarCheck size={18} strokeWidth={2.4} /></span> Class Attendance</button>
+          <button className={`nav-item ${activeTab === 'timetable' ? 'active' : ''}`} onClick={() => handleNav('timetable')}><span className="nav-icon"><Clock size={18} strokeWidth={2.4} /></span> My Classes</button>
+          <button className={`nav-item ${activeTab === 'notes' ? 'active' : ''}`} onClick={() => handleNav('notes')}><span className="nav-icon"><FolderOpen size={18} strokeWidth={2.4} /></span> Class Notes</button>
+          <button className={`nav-item ${activeTab === 'marks' ? 'active' : ''}`} onClick={() => handleNav('marks')}><span className="nav-icon"><PenLine size={18} strokeWidth={2.4} /></span> Exam Marks</button>
+          <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon"><MessageCircle size={18} strokeWidth={2.4} /></span> Support & Chat</button>
         </nav>
       </aside>
 
@@ -267,7 +228,6 @@ const StudentDashboard = () => {
           <div className="profile-menu-wrap">
             <button
               className="user-profile-badge"
-              style={{ border: 'none', cursor: 'pointer' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setIsProfileMenuOpen((prev) => !prev);
@@ -278,10 +238,10 @@ const StudentDashboard = () => {
             </button>
             {isProfileMenuOpen && (
               <div className="profile-menu-popover">
-                <button className="modern-btn btn-primary" style={{ width: '100%', marginBottom: '8px' }} onClick={openChangePasswordModal}>
+                <button className="modern-btn btn-primary" onClick={openChangePasswordModal}>
                   Change Password
                 </button>
-                <button className="modern-btn btn-danger" style={{ width: '100%' }} onClick={handleLogout}>
+                <button className="modern-btn btn-danger" onClick={handleLogout}>
                   Secure Logout
                 </button>
               </div>
@@ -325,9 +285,9 @@ const StudentDashboard = () => {
 
           {activeTab === 'timetable' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">My Classes (Timetable)</h3><div className="grid-list">{schedule.length === 0 ? <div className="empty-state">No upcoming classes scheduled.</div> : null}{schedule.map((cls, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#eff6ff', color: '#3b82f6' }}>⏰</div><div className="card-details"><h4>{cls.subject} - {cls.topic}</h4><p>Scheduled: {new Date(cls.date).toLocaleDateString('en-GB')}</p></div></div>))}</div></div>)}
 
-          {activeTab === 'notes' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">Class Notes & Resources</h3><div className="grid-list">{notesList.length === 0 ? <div className="empty-state">No notes uploaded yet.</div> : null}{notesList.map((note, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#ecfdf5', color: '#10b981' }}>📁</div><div className="card-details" style={{ flex: 1 }}><h4>{note.title}</h4><p>Uploaded by: {note.uploadedBy}</p></div><a href={`https://ace-academy-backend-e0pi.onrender.com/${note.filePath.replace('\\', '/')}`} target="_blank" rel="noreferrer" className="modern-btn btn-primary">Download</a></div>))}</div></div>)}
+          {activeTab === 'notes' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">Class Notes & Resources</h3><div className="grid-list">{notesList.length === 0 ? <div className="empty-state">No notes uploaded yet.</div> : null}{notesList.map((note, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#ecfdf5', color: '#2ee6a6' }}>📁</div><div className="card-details" style={{ flex: 1 }}><h4>{note.title}</h4><p>Uploaded by: {note.uploadedBy}</p></div><a href={`https://ace-academy-backend-e0pi.onrender.com/${note.filePath.replace('\\', '/')}`} target="_blank" rel="noreferrer" className="modern-btn btn-primary">Download</a></div>))}</div></div>)}
 
-          {activeTab === 'marks' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">Exam Marks History</h3><div className="grid-list">{stats.marks && stats.marks.length === 0 ? <div className="empty-state">No exams graded yet.</div> : null}{stats.marks && stats.marks.map((mark, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#fef3c7', color: '#f59e0b' }}>📝</div><div className="card-details" style={{ flex: 1 }}><h4>{mark.subject} ({mark.topic})</h4><p>Date: {new Date(mark.date).toLocaleDateString()}</p></div><div className="marks-display"><div className="marks-score">{mark.marksObtained} / {mark.maxMarks}</div><div className={`status-badge ${mark.grade === 'Fail' ? 'badge-danger' : 'badge-success'}`}>{mark.grade}</div></div></div>))}</div></div>)}
+          {activeTab === 'marks' && (<div className="modern-widget tab-fade-in" style={{ maxWidth: '850px' }}><h3 className="widget-title">Exam Marks History</h3><div className="grid-list">{stats.marks && stats.marks.length === 0 ? <div className="empty-state">No exams graded yet.</div> : null}{stats.marks && stats.marks.map((mark, index) => (<div key={index} className="modern-card hover-lift"><div className="card-icon" style={{ backgroundColor: '#fef3c7', color: '#ffd60a' }}>📝</div><div className="card-details" style={{ flex: 1 }}><h4>{mark.subject} ({mark.topic})</h4><p>Date: {new Date(mark.date).toLocaleDateString()}</p></div><div className="marks-display"><div className="marks-score">{mark.marksObtained} / {mark.maxMarks}</div><div className={`status-badge ${mark.grade === 'Fail' ? 'badge-danger' : 'badge-success'}`}>{mark.grade}</div></div></div>))}</div></div>)}
 
           {activeTab === 'chat' && (
             <div className="tab-fade-in" style={{ maxWidth: '1000px' }}>
@@ -337,7 +297,7 @@ const StudentDashboard = () => {
                   <div className="contact-list">
                     {chatContacts.map(contact => (
                       <div key={contact.id} className={`chat-contact ${chatRoom === contact.room ? 'active' : ''}`} onClick={() => selectChat(contact)}>
-                        <div className="contact-avatar-circle" style={{ backgroundColor: contact.type === 'group' ? '#f59e0b' : contact.type === 'admin' ? '#ef4444' : '#4F46E5' }}>{contact.initial}</div>
+                        <div className="contact-avatar-circle" style={{ backgroundColor: contact.type === 'group' ? '#ffd60a' : contact.type === 'admin' ? '#ff2e4c' : '#b8a4ff' }}>{contact.initial}</div>
                         <div className="contact-info"><span className="contact-name">{contact.name}</span><span className="contact-type">{contact.type}</span></div>
                         {unreadRooms[contact.room] && <div className="unread-dot"></div>}
                       </div>
@@ -349,7 +309,7 @@ const StudentDashboard = () => {
                   {selectedChatObj ? (
                     <>
                       <div className="chat-active-header">
-                        <div className="contact-avatar-circle" style={{ width: '35px', height: '35px', marginRight: '10px', fontSize: '1rem', backgroundColor: selectedChatObj.type === 'group' ? '#f59e0b' : selectedChatObj.type === 'admin' ? '#ef4444' : '#4F46E5' }}>{selectedChatObj.initial}</div>
+                        <div className="contact-avatar-circle" style={{ width: '35px', height: '35px', marginRight: '10px', fontSize: '1rem', backgroundColor: selectedChatObj.type === 'group' ? '#ffd60a' : selectedChatObj.type === 'admin' ? '#ff2e4c' : '#b8a4ff' }}>{selectedChatObj.initial}</div>
                         {selectedChatObj.name}
                       </div>
                       <div className="chat-messages">
@@ -380,38 +340,17 @@ const StudentDashboard = () => {
           )}
         </div>
         {isChangePasswordOpen && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(15, 23, 42, 0.45)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 3000,
-              padding: '16px',
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '440px',
-                background: '#fff',
-                borderRadius: '16px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 20px 45px rgba(15, 23, 42, 0.2)',
-                padding: '20px',
-              }}
-            >
-              <h3 style={{ margin: '0 0 14px 0', color: '#1e293b' }}>Change Password</h3>
+          <div className="modal-backdrop">
+            <div className="modal-card" role="dialog" aria-modal="true" aria-label="Change Password">
+              <h3 className="modal-title">Change Password</h3>
               <form className="quick-form" onSubmit={handlePasswordChangeSubmit}>
                 <input type="password" className="modern-input" placeholder="Current Password" value={passwordForm.currentPassword} onChange={(e) => handlePasswordFieldChange('currentPassword', e.target.value)} required />
                 <input type="password" className="modern-input" placeholder="New Password" value={passwordForm.newPassword} onChange={(e) => handlePasswordFieldChange('newPassword', e.target.value)} required />
                 <input type="password" className="modern-input" placeholder="Confirm New Password" value={passwordForm.confirmNewPassword} onChange={(e) => handlePasswordFieldChange('confirmNewPassword', e.target.value)} required />
-                {passwordError ? <p style={{ margin: 0, color: '#dc2626', fontWeight: 600 }}>{passwordError}</p> : null}
-                {passwordSuccess ? <p style={{ margin: 0, color: '#16a34a', fontWeight: 600 }}>{passwordSuccess}</p> : null}
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                  <button type="button" className="modern-btn" style={{ background: '#e2e8f0', color: '#1f2937' }} onClick={closeChangePasswordModal}>
+                {passwordError ? <p className="form-msg is-error">{passwordError}</p> : null}
+                {passwordSuccess ? <p className="form-msg is-success">{passwordSuccess}</p> : null}
+                <div className="modal-actions">
+                  <button type="button" className="modern-btn btn-ghost" onClick={closeChangePasswordModal}>
                     Cancel
                   </button>
                   <button type="submit" className="modern-btn btn-primary" disabled={isChangingPassword}>
