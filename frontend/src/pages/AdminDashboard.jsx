@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import { Files, GraduationCap, Home, Menu, MessageCircle, UserPlus } from 'lucide-react';
+import { Files, GraduationCap, Home, Menu, MessageCircle, ScrollText, UserPlus } from 'lucide-react';
 import AceLogo from '../components/AceLogo';
+import AdminLogs from '../components/AdminLogs';
 import '../styles/dashboard.css';
 
 const socket = io.connect('https://ace-academy-backend-e0pi.onrender.com');
@@ -311,6 +312,7 @@ export default function AdminDashboard() {
           <button className={`nav-item ${activeTab === 'addStudent' ? 'active' : ''}`} onClick={() => handleNav('addStudent')}><span className="nav-icon"><GraduationCap size={18} strokeWidth={2.4} /></span> Add Student</button>
           <button className={`nav-item ${activeTab === 'manageNotes' ? 'active' : ''}`} onClick={() => handleNav('manageNotes')}><span className="nav-icon"><Files size={18} strokeWidth={2.4} /></span> Manage Content</button>
           <button className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleNav('chat')}><span className="nav-icon"><MessageCircle size={18} strokeWidth={2.4} /></span> Universal Chat</button>
+          <button className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => handleNav('logs')}><span className="nav-icon"><ScrollText size={18} strokeWidth={2.4} /></span> Login Logs</button>
         </nav>
         <button className="logout-btn" onClick={handleLogout}>System Logout</button>
       </aside>
@@ -459,6 +461,8 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {activeTab === 'logs' && <AdminLogs users={allUsers} />}
 
         {activeTab === 'chat' && (
           <div className="tab-fade-in" style={{ maxWidth: '1000px' }}>

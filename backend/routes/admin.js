@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Log = require('../models/Log');
 const bcrypt = require('bcrypt'); // <-- NEW: Import the encryption tool
 
 // Admin creates a new user
@@ -47,6 +48,47 @@ router.get('/all-users', async (req, res) => {
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch users" });
+    }
+});
+
+// --- LOGS: list login / logout activity (newest first) ---
+// Optional filters: ?username=  ?role=student|teacher
+router.get('/logs', async (req, res) => {
+    try {
+        const { username, role } = req.query;
+        const filter = {};
+        if (username) filter.username = username;
+        if (role) filter.role = role;
+        const logs = await Log.find(filter).sort({ timestamp: -1 }).limit(2000);
+        res.json(logs);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch logs' });
+    }
+});
+
+// --- LOGS: delete one entry ---
+router.delete('/logs/:id', async (req, res) => {
+    try {
+        const deleted = await Log.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ message: 'Log not found' });
+        res.json({ message: 'Log deleted' });
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid log id' });
+    }
+});
+
+// --- LOGS: delete many. Body: { username } or { role } or { all: true } ---
+router.delete('/logs', async (req, res) => {
+    try {
+        const { username, role, all } = req.body || {};
+        const filter = {};
+        if (username) filter.username = username;
+        else if (role) filter.role = role;
+        else if (all !== true) return res.status(400).json({ message: 'Choose a user, a role, or all logs to delete' });
+        const result = await Log.deleteMany(filter);
+        res.json({ message: `${result.deletedCount} log(s) deleted`, deleted: result.deletedCount });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete logs' });
     }
 });
 
