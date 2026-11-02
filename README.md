@@ -45,9 +45,11 @@ Plus a **public website** for admissions, courses and fee plans, and an **instal
 
 ## API overview
 
+Every route except login checks the token sent as `Authorization: Bearer <token>` and the user's role: admins can do everything, teachers only see their own students, and students only their own records, their grade's notes and timetable, and their own chats.
+
 | Area | Routes |
 |---|---|
-| Auth | `POST /login`, `/logout`, `/register`, `/change-password` |
+| Auth | `POST /login`; `/logout`, `/change-password` (logged in); `/register` (admin) |
 | Admin | create user, list users, login logs |
 | Records | students, teachers, attendance, marks, stats, profiles |
 | Learning | notes upload and download, timetable, class progress |
@@ -67,6 +69,7 @@ cd backend
 npm install
 # create backend/.env with:
 #   MONGODB_URI=mongodb+srv://...
+#   JWT_SECRET=<a long random string, 32+ characters>
 #   CLIENT_URL=http://localhost:5173
 node server.js            # http://localhost:5000
 
