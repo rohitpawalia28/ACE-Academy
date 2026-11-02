@@ -41,6 +41,7 @@ const StudentDashboard = () => {
     else {
       setUsername(storedName);
       socket.emit('register_user', storedName);
+      socket.emit('authenticate', token);
       fetchAllData(storedName);
     }
   }, [navigate]);

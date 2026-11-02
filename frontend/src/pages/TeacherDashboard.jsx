@@ -38,7 +38,7 @@ const TeacherDashboard = () => {
     const safeRole = storedRole ? String(storedRole).toLowerCase().trim() : '';
 
     if (!token || safeRole !== 'teacher') { localStorage.clear(); navigate('/'); } 
-    else { setUsername(storedUsername); socket.emit('register_user', storedUsername); fetchData(storedUsername); }
+    else { setUsername(storedUsername); socket.emit('register_user', storedUsername); socket.emit('authenticate', token); fetchData(storedUsername); }
   }, [navigate]);
 
   useEffect(() => {

@@ -74,6 +74,7 @@ export default function AdminDashboard() {
 
     setAdminName(storedUsername);
     socket.emit('register_user', storedUsername);
+    socket.emit('authenticate', token);
     fetchData();
   }, [navigate]);
 
