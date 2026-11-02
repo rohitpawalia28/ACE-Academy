@@ -3,32 +3,27 @@ const router = express.Router();
 const Attendance = require('../models/Attendance');
 const Mark = require('../models/Mark');
 const User = require('../models/User');
+const { requireAuth, requireRole } = require('../middleware/auth');
+const { teachesStudent, canViewStudent } = require('../utils/access');
 
+// Every route here needs a logged-in user.
+router.use(requireAuth);
+
+// Your own profile (admins can view anyone's).
 router.get('/profile/:username', async (req, res) => {
     try {
-        const user = await User.findOne({ username: req.params.username }).select('-password');
+        if (req.user.role !== 'admin' && req.user.username !== req.params.username) {
+            return res.status(403).json({ message: 'You do not have access to this.' });
+        }
+        const user = await User.findOne({ username: req.params.username }).select('-password -activeSessionToken');
         res.json(user);
     } catch (error) { res.status(500).json({ message: 'Error fetching profile' }); }
 });
 
-// Subjects stored as "Grade 10: Math". Returns the subject names for one grade.
-const subjectsForGrade = (list, grade) =>
-    (list || []).filter((s) => s.startsWith(grade + ': ')).map((s) => s.slice(grade.length + 2));
-
-// A teacher teaches a student if they share the grade and at least one subject.
-// Missing subject data, or "All Subjects" (Grades 3-8), counts as a match.
-const teachesStudent = (teacher, student) => {
-    if (!student.grade || !(teacher.assignedGrades || []).includes(student.grade)) return false;
-    const tSubs = subjectsForGrade(teacher.assignedSubjects, student.grade);
-    const sSubs = subjectsForGrade(student.assignedSubjects, student.grade);
-    if (tSubs.length === 0 || sSubs.length === 0) return true;
-    if (tSubs.includes('All Subjects') || sSubs.includes('All Subjects')) return true;
-    return sSubs.some((sub) => tSubs.includes(sub));
-};
-
-router.get('/students', async (req, res) => {
+router.get('/students', requireRole('teacher', 'admin'), async (req, res) => {
     try {
-        const { teacher } = req.query;
+        // Teachers only ever see their own students
+        const teacher = req.user.role === 'teacher' ? req.user.username : req.query.teacher;
         if (teacher) {
             const teacherObj = await User.findOne({ username: teacher });
             if (teacherObj && teacherObj.assignedGrades) {
@@ -37,6 +32,7 @@ router.get('/students', async (req, res) => {
                 return res.json(students.filter((s) => teachesStudent(teacherObj, s)));
             }
         }
+        if (req.user.role === 'teacher') return res.json([]);
         const students = await User.find({ role: 'student' }).select('username name grade assignedSubjects');
         res.json(students);
     } catch (error) { res.status(500).json({ message: 'Failed to fetch students' }); }
@@ -44,7 +40,8 @@ router.get('/students', async (req, res) => {
 
 router.get('/teachers', async (req, res) => {
     try {
-        const { student } = req.query;
+        // Students only ever see their own teachers
+        const student = req.user.role === 'student' ? req.user.username : req.query.student;
         if (student) {
             const studentObj = await User.findOne({ username: student });
             if (studentObj && studentObj.grade) {
@@ -69,7 +66,7 @@ router.get('/admins', async (req, res) => {
 });
 
 // --- NEW: Fetch Attendance for a specific date so teachers can see if it's already marked ---
-router.get('/attendance/:date', async (req, res) => {
+router.get('/attendance/:date', requireRole('teacher', 'admin'), async (req, res) => {
     try {
         const records = await Attendance.find({ date: req.params.date });
         res.json(records);
@@ -77,9 +74,11 @@ router.get('/attendance/:date', async (req, res) => {
 });
 
 // --- UPDATED: Save Attendance (Skips 'Not my student' and saves the Teacher's signature) ---
-router.post('/attendance', async (req, res) => {
+router.post('/attendance', requireRole('teacher', 'admin'), async (req, res) => {
     try {
-        const { date, records, markedBy } = req.body; 
+        const { date, records } = req.body;
+        if (!Array.isArray(records)) return res.status(400).json({ message: 'No attendance records sent' });
+        const markedBy = req.user.username; // signed by whoever is logged in
         for (let record of records) {
             if (record.status === 'Not my student') {
                 // Ignore these. If they previously marked them, delete the old mark.
@@ -96,9 +95,10 @@ router.post('/attendance', async (req, res) => {
     } catch (error) { res.status(500).json({ message: 'Failed to save attendance' }); }
 });
 
-router.post('/marks', async (req, res) => {
+router.post('/marks', requireRole('teacher', 'admin'), async (req, res) => {
     try {
         const { date, subject, topic, maxMarks, records } = req.body;
+        if (!Array.isArray(records)) return res.status(400).json({ message: 'No marks sent' });
         for (let record of records) {
             await Mark.findOneAndUpdate(
                 { date: date, subject: subject, topic: topic, studentUsername: record.username },
@@ -113,6 +113,9 @@ router.post('/marks', async (req, res) => {
 router.get('/stats/:username', async (req, res) => {
     try {
         const username = req.params.username;
+        if (!(await canViewStudent(req.user, username))) {
+            return res.status(403).json({ message: 'You do not have access to this.' });
+        }
         const attendanceRecords = await Attendance.find({ studentUsername: username }).sort({ date: -1 });
         const totalClasses = attendanceRecords.length;
         const presentClasses = attendanceRecords.filter(r => r.status === 'Present').length;

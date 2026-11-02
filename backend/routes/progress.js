@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const Progress = require('../models/Progress');
+const { requireAuth, requireRole } = require('../middleware/auth');
+const { canViewStudent } = require('../utils/access');
+
+router.use(requireAuth);
 
 // ROUTE 1: Teacher updates a student's progress
-router.post('/update', async (req, res) => {
+router.post('/update', requireRole('teacher', 'admin'), async (req, res) => {
     try {
-        const { studentUsername, percentage, status, updatedBy } = req.body;
+        const { studentUsername, percentage, status } = req.body;
+        const updatedBy = req.user.username;
         
         // This clever Mongoose function finds the student and updates them, 
         // OR creates a new record if they don't exist yet! (upsert: true)
@@ -24,6 +29,9 @@ router.post('/update', async (req, res) => {
 // ROUTE 2: Student fetches their specific progress
 router.get('/:username', async (req, res) => {
     try {
+        if (!(await canViewStudent(req.user, req.params.username))) {
+            return res.status(403).json({ message: 'You do not have access to this.' });
+        }
         const progress = await Progress.findOne({ studentUsername: req.params.username });
         if (!progress) {
             // If the teacher hasn't graded them yet, return a default 0%

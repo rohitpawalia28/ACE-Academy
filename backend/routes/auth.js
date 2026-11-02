@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Log = require('../models/Log');
+const { signToken, verifyToken, requireAuth, requireRole } = require('../middleware/auth');
 
-// A secret key used to stamp our login tokens (we will move this to a secure file later)
-const JWT_SECRET = 'ace_academy_super_secret_key_2026';
+const ROLES = ['admin', 'teacher', 'student'];
 
 // --- ROUTE 1: ADMIN CREATE USER ---
-// You (the admin) will use this to create fixed accounts for students/teachers
-router.post('/register', async (req, res) => {
+// Only a logged-in admin can create accounts.
+router.post('/register', requireAuth, requireRole('admin'), async (req, res) => {
     try {
         const { username, password, role } = req.body;
+        if (!username || !password || !ROLES.includes(role)) {
+            return res.status(400).json({ message: 'Username, password and a valid role are required' });
+        }
 
         // 1. Check if user already exists
         let user = await User.findOne({ username });
@@ -40,6 +42,9 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
+        if (typeof username !== 'string' || typeof password !== 'string') {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
 
         // 1. Find the user
         const user = await User.findOne({ username });
@@ -50,14 +55,16 @@ router.post('/login', async (req, res) => {
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
         // 3. ENFORCE DOUBLE LOGIN RULE
-        if (user.activeSessionToken) {
+        // Only a session that is still valid blocks a new login, so expired or
+        // revoked sessions can't lock anyone out.
+        if (user.activeSessionToken && verifyToken(user.activeSessionToken)) {
             return res.status(403).json({ 
                 message: 'Access Denied: You are already logged in on another device.' 
             });
         }
 
         // 4. Generate a new token and save it to the database
-        const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET);
+        const token = signToken(user);
         user.activeSessionToken = token;
         await user.save();
 
@@ -75,12 +82,10 @@ router.post('/login', async (req, res) => {
 });
 
 // --- ROUTE 3: USER LOGOUT ---
-router.post('/logout', async (req, res) => {
+router.post('/logout', requireAuth, async (req, res) => {
     try {
-        const { username } = req.body;
-
-        // Find the user and set their session token back to null
-        const user = await User.findOne({ username });
+        // Log out the user the token belongs to, not whoever is named in the body
+        const user = await User.findById(req.user._id);
         if (!user) return res.status(400).json({ message: 'User not found' });
 
         user.activeSessionToken = null;
@@ -100,11 +105,11 @@ router.post('/logout', async (req, res) => {
 });
 
 // --- ROUTE 4: CHANGE PASSWORD ---
-router.post('/change-password', async (req, res) => {
+router.post('/change-password', requireAuth, async (req, res) => {
     try {
-        const { username, currentPassword, newPassword, confirmNewPassword } = req.body;
+        const { currentPassword, newPassword, confirmNewPassword } = req.body;
 
-        if (!username || !currentPassword || !newPassword || !confirmNewPassword) {
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
             return res.status(400).json({ message: 'All password fields are required' });
         }
 
@@ -116,7 +121,8 @@ router.post('/change-password', async (req, res) => {
             return res.status(400).json({ message: 'New password must be at least 6 characters long' });
         }
 
-        const user = await User.findOne({ username });
+        // Change the password of the logged-in user only
+        const user = await User.findById(req.user._id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         const isCurrentValid = await bcrypt.compare(currentPassword, user.password);

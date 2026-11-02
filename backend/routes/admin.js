@@ -4,6 +4,10 @@ const User = require('../models/User');
 const Log = require('../models/Log');
 const bcrypt = require('bcrypt'); // <-- NEW: Import the encryption tool
 
+// Every route in this file is admin-only (enforced where it is mounted in server.js).
+
+const ROLES = ['admin', 'teacher', 'student'];
+
 // Admin creates a new user
 router.post('/create-user', async (req, res) => {
     try {
@@ -12,6 +16,10 @@ router.post('/create-user', async (req, res) => {
             assignedGrades, assignedSubjects, 
             grade, startDate, feeStructure, timing 
         } = req.body;
+
+        if (typeof username !== 'string' || !username || typeof password !== 'string' || !password || !ROLES.includes(role)) {
+            return res.status(400).json({ message: 'Username, password and a valid role are required' });
+        }
 
         // Check if username already exists
         const existingUser = await User.findOne({ username });
@@ -44,7 +52,7 @@ router.post('/create-user', async (req, res) => {
 // Fetch all users for Admin to view
 router.get('/all-users', async (req, res) => {
     try {
-        const users = await User.find({ role: { $ne: 'admin' } }).select('-password'); 
+        const users = await User.find({ role: { $ne: 'admin' } }).select('-password -activeSessionToken'); 
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch users" });

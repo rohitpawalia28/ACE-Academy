@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const Note = require('../models/Note');
+const { requireAuth, requireRole } = require('../middleware/auth');
 
 // Files are stored in MongoDB (GridFS) instead of the local disk.
 // Render's filesystem is ephemeral (wiped on every deploy/restart) and the
@@ -34,9 +35,10 @@ const handleUpload = (req, res, next) => {
 };
 
 // ROUTE 1: Upload a new note
-router.post('/upload', handleUpload, async (req, res) => {
+router.post('/upload', requireAuth, requireRole('teacher', 'admin'), handleUpload, async (req, res) => {
     try {
-        const { title, batch, uploadedBy } = req.body;
+        const { title, batch } = req.body;
+        const uploadedBy = req.user.username;
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
         const fileId = await new Promise((resolve, reject) => {
@@ -67,6 +69,8 @@ router.post('/upload', handleUpload, async (req, res) => {
 });
 
 // ROUTE 2: Stream / download a stored file
+// Left open on purpose: the app opens files as plain links, which can't carry the
+// login header. File ids are only listed to logged-in users.
 router.get('/file/:id', async (req, res) => {
     try {
         const fileId = new mongoose.Types.ObjectId(req.params.id);
@@ -91,8 +95,11 @@ router.get('/file/:id', async (req, res) => {
 });
 
 // ROUTE 3: Get all notes for a specific batch (For Students)
-router.get('/:batch', async (req, res) => {
+router.get('/:batch', requireAuth, async (req, res) => {
     try {
+        if (req.user.role === 'student' && req.user.grade !== req.params.batch) {
+            return res.status(403).json({ message: 'You do not have access to this.' });
+        }
         const notes = await Note.find({ batch: req.params.batch }).sort({ uploadDate: -1 });
         res.json(notes);
     } catch (error) {
@@ -101,7 +108,7 @@ router.get('/:batch', async (req, res) => {
 });
 
 // ROUTE 4: Get ALL notes (For Teachers to manage)
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, requireRole('teacher', 'admin'), async (req, res) => {
     try {
         const notes = await Note.find().sort({ uploadDate: -1 });
         res.json(notes);
@@ -111,7 +118,7 @@ router.get('/', async (req, res) => {
 });
 
 // ROUTE 5: DELETE a note
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, requireRole('teacher', 'admin'), async (req, res) => {
     try {
         const note = await Note.findById(req.params.id);
         if (!note) return res.status(404).json({ message: 'Note not found' });
